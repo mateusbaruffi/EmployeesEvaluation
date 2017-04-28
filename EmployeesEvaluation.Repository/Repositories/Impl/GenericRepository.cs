@@ -15,12 +15,11 @@ namespace EmployeesEvaluation.Repository.Repositories.Impl
 
         private EmployeesEvaluationContext _context;
 
-        #region Properties
         public GenericRepository(EmployeesEvaluationContext context)
         {
             _context = context;
         }
-        #endregion
+        
         public virtual IEnumerable<T> GetAll()
         {
             return _context.Set<T>().AsEnumerable();
