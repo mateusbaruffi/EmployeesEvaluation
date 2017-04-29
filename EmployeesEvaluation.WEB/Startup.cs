@@ -79,7 +79,8 @@ namespace EmployeesEvaluation.WEB
             Mapper.Initialize(config =>
             {
                 config.CreateMap<Department, DepartmentDto>();
-                config.CreateMap<DepartmentDto, Department>().ForMember(property => property.Id, options => options.Ignore());
+                config.CreateMap<DepartmentDto, Department>();
+                //config.CreateMap<DepartmentDto, Department>().ForMember(property => property.Id, options => options.Ignore());
             });
 
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));

@@ -5,3 +5,15 @@
 <h3>@ViewData["Message"]</h3>
 
 <p>Use this area to provide additional information.</p>
+
+<h2>Kendo UI DatePicker</h2>
+
+@(Html.Kendo().DatePicker()
+                .Name("datepicker")
+                .Deferred()
+)
+
+@* All initialization scripts are rendered to the bottom of the page, see _Layout.cshtml *@
+@section scripts {
+    @Html.Kendo().DeferredScripts()
+}
