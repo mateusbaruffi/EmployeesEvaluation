@@ -17,6 +17,7 @@ using EmployeesEvaluation.Repository.Repositories.Impl;
 using EmployeesEvaluation.Services;
 using EmployeesEvaluation.Services.Impl;
 using EmployeesEvaluation.WEB.Dtos;
+using Newtonsoft.Json.Serialization;
 using AutoMapper;
 
 namespace EmployeesEvaluation.WEB
@@ -54,7 +55,9 @@ namespace EmployeesEvaluation.WEB
                 .AddEntityFrameworkStores<EmployeesEvaluationContext>()
                 .AddDefaultTokenProviders();
 
-            services.AddMvc();
+            services.AddMvc().AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
+
+            services.AddKendo();
 
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
@@ -105,6 +108,9 @@ namespace EmployeesEvaluation.WEB
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            // Configure Kendo UI
+            app.UseKendo(env);
         }
     }
 }
