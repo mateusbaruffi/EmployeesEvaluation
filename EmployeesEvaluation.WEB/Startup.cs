@@ -80,6 +80,9 @@ namespace EmployeesEvaluation.WEB
             {
                 config.CreateMap<Department, DepartmentDto>();
                 config.CreateMap<DepartmentDto, Department>();
+
+                config.CreateMap<Season, SeasonDto>();
+                config.CreateMap<SeasonDto, Season>();
                 //config.CreateMap<DepartmentDto, Department>().ForMember(property => property.Id, options => options.Ignore());
             });
 

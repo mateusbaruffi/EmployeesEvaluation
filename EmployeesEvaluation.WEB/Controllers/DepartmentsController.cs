@@ -32,7 +32,6 @@ namespace EmployeesEvaluation.WEB.Controllers
 
         public IActionResult Save(Department department)
         {
-            _logger.LogInformation("@@@@@@@@@@@@@@@@@@ entrou no save");
             if (!ModelState.IsValid)
                 return View();
 

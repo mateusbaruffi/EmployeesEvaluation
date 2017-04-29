@@ -1,17 +1,17 @@
 
 
-<h2>Index Departments</h2>
+<h2>Index Seasons</h2>
 
 <div class="row">
     <div class="col-xs-18 col-md-12">
-        @(Html.Kendo().Grid<EmployeesEvaluation.WEB.Dtos.DepartmentDto>()
-                .Name("department")
+        @(Html.Kendo().Grid<EmployeesEvaluation.WEB.Dtos.SeasonDto>()
+                .Name("Seasons")
                 .Columns(columns =>
                 {
                     columns.Bound(p => p.Name);
                     columns.Command(command => { command.Edit(); command.Destroy(); }).Width(225);
                 })
-                .ToolBar(toolbar => toolbar.Create().Text("New Department"))
+                .ToolBar(toolbar => toolbar.Create().Text("New Season"))
                 .Pageable()
                 .Sortable()
                 .Scrollable()
@@ -20,12 +20,11 @@
                 .DataSource(dataSource => dataSource
                     .Ajax()
                     .Model(p => p.Id(m => m.Id))
-                    .ServerOperation(false)
                     .PageSize(20)
-                    .Read(read => read.Action("List", "Departments"))
-                    .Create(create => create.Action("Create", "Departments"))
-                    .Update(update => update.Action("Update", "Departments"))
-                    .Destroy(delete => delete.Action("Delete", "Departments"))
+                    .Read(read => read.Action("List", "Seasons"))
+                    .Create(create => create.Action("Create", "Seasons"))
+                    .Update(update => update.Action("Update", "Seasons"))
+                    .Destroy(delete => delete.Action("Delete", "Seasons"))
                 ).Deferred()
         )
 
