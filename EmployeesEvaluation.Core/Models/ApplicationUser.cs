@@ -9,5 +9,9 @@ namespace EmployeesEvaluation.Core.Models
     // Add profile data for application users by adding properties to the ApplicationUser class
     public class ApplicationUser : IdentityUser
     {
+
+        public virtual ICollection<UserRelation> DepartmentManagersRelated { get; set; }
+        public virtual ICollection<UserRelation> EmployeesRelated { get; set; }
+
     }
 }
