@@ -19,6 +19,7 @@ namespace EmployeesEvaluation.Repository
         public DbSet<EvaluationQuestion> EvaluationQuestion { get; set; }
         public DbSet<QuestionType> QuestionType { get; set; }
         public DbSet<Season> Season { get; set; }
+        public DbSet<UserRelation> UserRelation { get; set; }
 
         public EmployeesEvaluationContext (DbContextOptions<EmployeesEvaluationContext> options) : base(options) { }
 
@@ -33,6 +34,22 @@ namespace EmployeesEvaluation.Repository
             }
 
             // Using fluent API instead data annotations to preserve the domain model
+            modelBuilder.Entity<UserRelation>()
+                .HasKey(ur => new { ur.DepartmentManagerId, ur.EmployeeId });
+
+            modelBuilder.Entity<UserRelation>()
+                .HasOne(ur => ur.Employee)
+                .WithMany(u => u.EmployeesRelated)
+                .HasForeignKey(ur => ur.EmployeeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<UserRelation>()
+                .HasOne(ur => ur.DepartmentManager)
+                .WithMany(u => u.DepartmentManagersRelated)
+                .HasForeignKey(ur => ur.DepartmentManagerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
             modelBuilder.Entity<Department>()
                 .ToTable("Departments");
 
