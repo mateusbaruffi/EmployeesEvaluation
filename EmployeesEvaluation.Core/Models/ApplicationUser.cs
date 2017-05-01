@@ -10,6 +10,8 @@ namespace EmployeesEvaluation.Core.Models
     public class ApplicationUser : IdentityUser
     {
 
+        public UserType UserType { get; set; }
+
         public virtual ICollection<UserRelation> DepartmentManagersRelated { get; set; }
         public virtual ICollection<UserRelation> EmployeesRelated { get; set; }
 

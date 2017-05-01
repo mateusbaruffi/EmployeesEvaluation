@@ -34,6 +34,10 @@ namespace EmployeesEvaluation.Repository
             }
 
             // Using fluent API instead data annotations to preserve the domain model
+            modelBuilder.Entity<ApplicationUser>()
+                .Property(u => u.UserType)
+                .HasDefaultValue(UserType.EMP);
+
             modelBuilder.Entity<UserRelation>()
                 .HasKey(ur => new { ur.DepartmentManagerId, ur.EmployeeId });
 
