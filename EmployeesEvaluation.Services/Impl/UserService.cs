@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using EmployeesEvaluation.Repository.Repositories;
 using EmployeesEvaluation.Core.Models;
+using System.Linq.Expressions;
 
 namespace EmployeesEvaluation.Services.Impl
 {
@@ -28,6 +29,11 @@ namespace EmployeesEvaluation.Services.Impl
         public void Add(UserRelation ur)
         {
             _userRelationRepository.Add(ur);
+        }
+
+        public virtual IEnumerable<ApplicationUser> FindBy(Expression<Func<ApplicationUser, bool>> predicate)
+        {
+            return _userRepository.FindBy(predicate);
         }
     }
 }

@@ -4,16 +4,22 @@ using System.Linq.Expressions;
 using System.Linq;
 using EmployeesEvaluation.Core.Models;
 using EmployeesEvaluation.Repository.Repositories;
+using Microsoft.Extensions.Logging;
 
 namespace EmployeesEvaluation.Services.Impl
 {
     public class QuestionService : IQuestionService
     {
         private IQuestionRepository _questionRepository;
+        private ILikertAnswerRepository _likertAnswerRepository;
+
+        private readonly ILogger _logger;
  
-        public QuestionService(IQuestionRepository questionRepository) 
+        public QuestionService(IQuestionRepository questionRepository, ILikertAnswerRepository likertAnswerRepository, ILogger<QuestionService> logger) 
         { 
-            this._questionRepository = questionRepository; 
+            this._questionRepository = questionRepository;
+            this._likertAnswerRepository = likertAnswerRepository;
+            this._logger = logger;
         } 
 
         public IEnumerable<Question> AllIncluding(params Expression<Func<Question, object>>[] includeProperties)
@@ -48,8 +54,24 @@ namespace EmployeesEvaluation.Services.Impl
         } 
         
         public void Update(Question question) 
-        { 
+        {
+            // Update question attributes
             _questionRepository.Update(question); 
+
+            // update the answers if QuestionType is equal LikertScale
+            if (question.QuestionType == QuestionType.LikertScale)
+            {
+                // insert the new ones
+                foreach (var likertAnswer in question.LikertAnswers.ToList())
+                {
+                    LikertAnswer la = new LikertAnswer { QuestionId = question.Id, Description = likertAnswer.Description };
+                    _likertAnswerRepository.Add(la);
+                }
+
+                // remove all current answers
+                _likertAnswerRepository.DeleteWhere(l => l.QuestionId == question.Id);
+                
+            }
             _questionRepository.Commit();
         } 
  
