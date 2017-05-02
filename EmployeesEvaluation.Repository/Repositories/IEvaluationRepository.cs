@@ -5,6 +5,5 @@ namespace EmployeesEvaluation.Repository.Repositories
 {
     public interface IEvaluationRepository : IGenericRepository<Evaluation> { 
         IEnumerable<Evaluation> LoadAll();
-
     }
 }

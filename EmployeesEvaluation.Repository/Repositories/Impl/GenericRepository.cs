@@ -44,6 +44,17 @@ namespace EmployeesEvaluation.Repository.Repositories.Impl
             return _context.Set<T>().FirstOrDefault(x => x.Id == id);
         }
 
+        public T GetSingleIncluding(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includeProperties)
+        {
+            IQueryable<T> query = _context.Set<T>();
+            foreach (var includeProperty in includeProperties)
+            {
+                query = query.Include(includeProperty);
+            }
+
+            return query.Where(predicate).FirstOrDefault();
+        }
+
         public virtual IEnumerable<T> FindBy(Expression<Func<T, bool>> predicate)
         {
             return _context.Set<T>().Where(predicate);

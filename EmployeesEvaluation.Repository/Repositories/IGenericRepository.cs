@@ -11,6 +11,7 @@ namespace EmployeesEvaluation.Repository.Repositories
         IEnumerable<T> GetAll();
         int Count();
         T GetSingle(int id);
+        T GetSingleIncluding(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includeProperties);
         IEnumerable<T> FindBy(Expression<Func<T, bool>> predicate);
         void Add(T entity);
         void Update(T entity);

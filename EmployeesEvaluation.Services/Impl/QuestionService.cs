@@ -34,9 +34,15 @@ namespace EmployeesEvaluation.Services.Impl
         { 
             return _questionRepository.GetSingle(id); 
         } 
- 
+
+        public Question GetSingleIncluding(Expression<Func<Question, bool>> predicate, params Expression<Func<Question, object>>[] includeProperties)
+        {
+            return _questionRepository.GetSingleIncluding(predicate, includeProperties);
+        }
+
+
         public void Create(Question question) 
-        { 
+        {
             _questionRepository.Add(question); 
             _questionRepository.Commit();
         } 

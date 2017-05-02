@@ -33,8 +33,13 @@ namespace EmployeesEvaluation.Services.Impl
         public Department Get(int id) 
         { 
             return _departmentRepository.GetSingle(id); 
-        } 
- 
+        }
+
+        public Department GetSingleIncluding(Expression<Func<Department, bool>> predicate, params Expression<Func<Department, object>>[] includeProperties)
+        {
+            return _departmentRepository.GetSingleIncluding(predicate, includeProperties);
+        }
+
         public void Create(Department department) 
         { 
             _departmentRepository.Add(department); 

@@ -43,8 +43,13 @@ namespace EmployeesEvaluation.Services.Impl
         public Evaluation Get(int id) 
         { 
             return _evaluationRepository.GetSingle(id); 
-        } 
- 
+        }
+
+        public Evaluation GetSingleIncluding(Expression<Func<Evaluation, bool>> predicate, params Expression<Func<Evaluation, object>>[] includeProperties)
+        {
+            return _evaluationRepository.GetSingleIncluding(predicate, includeProperties);
+        }
+
         public void Create(Evaluation evaluation)
         {
 

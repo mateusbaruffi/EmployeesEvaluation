@@ -6,10 +6,13 @@ namespace EmployeesEvaluation.Core.Models
     public class Question : IEntityBase
     {
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string Description { get; set; }
+        public int Limit { get; set; }
         public QuestionType QuestionType { get; set; }
-        public int QuestionTypeId { get; set; }
+        public ApplicationUser Ownership { get; set; }
+        public string OwnershipId { get; set; }
         public ICollection<EvaluationQuestion> EvaluationQuestions { get; set; }
+        public ICollection<LikertAnswer> LikertAnswers { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
     }

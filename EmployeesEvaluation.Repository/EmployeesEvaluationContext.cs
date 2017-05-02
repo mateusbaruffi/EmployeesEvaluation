@@ -17,7 +17,7 @@ namespace EmployeesEvaluation.Repository
         public DbSet<Evaluation> Evaluation { get; set; }
         public DbSet<Question> Question { get; set; }
         public DbSet<EvaluationQuestion> EvaluationQuestion { get; set; }
-        public DbSet<QuestionType> QuestionType { get; set; }
+        public DbSet<LikertAnswer> LikertAnswer { get; set; }
         public DbSet<Season> Season { get; set; }
         public DbSet<UserRelation> UserRelation { get; set; }
 
@@ -71,9 +71,9 @@ namespace EmployeesEvaluation.Repository
             modelBuilder.Entity<Question>()
                 .ToTable("Questions");
 
-            modelBuilder.Entity<Question>()
+            /*modelBuilder.Entity<Question>()
                 .Property(q => q.QuestionTypeId)
-                .IsRequired();
+                .IsRequired();*/
 
             modelBuilder.Entity<Question>()
                 .Property(d => d.CreatedAt)
@@ -84,11 +84,11 @@ namespace EmployeesEvaluation.Repository
                 .HasDefaultValue(DateTime.Now);
 
             modelBuilder.Entity<Question>()
-                .HasOne(q => q.QuestionType)
-                .WithMany(c => c.Questions);
+                .HasOne(q => q.Ownership);
 
-            modelBuilder.Entity<QuestionType>()
-                .ToTable("QuestionTypes");
+            modelBuilder.Entity<LikertAnswer>()
+                .HasOne(la => la.Question)
+                .WithMany(q => q.LikertAnswers);
 
             modelBuilder.Entity<Season>()
                 .ToTable("Seasons");

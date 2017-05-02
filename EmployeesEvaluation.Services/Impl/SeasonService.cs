@@ -33,8 +33,13 @@ namespace EmployeesEvaluation.Services.Impl
         public Season Get(int id) 
         { 
             return _seasonRepository.GetSingle(id); 
-        } 
- 
+        }
+
+        public Season GetSingleIncluding(Expression<Func<Season, bool>> predicate, params Expression<Func<Season, object>>[] includeProperties)
+        {
+            return _seasonRepository.GetSingleIncluding(predicate, includeProperties);
+        }
+
         public void Create(Season season) 
         { 
             _seasonRepository.Add(season); 

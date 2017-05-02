@@ -20,8 +20,9 @@ namespace EmployeesEvaluation.Repository.Repositories.Impl
         {
             IQueryable<Evaluation> query = this._context.Set<Evaluation>();
  
-            query = query.Include(a => a.EvaluationQuestions).ThenInclude(al => al.Question).ThenInclude(qt => qt.QuestionType);
- 
+            //query = query.Include(a => a.EvaluationQuestions).ThenInclude(al => al.Question).ThenInclude(qt => qt.QuestionType);
+            query = query.Include(a => a.EvaluationQuestions).ThenInclude(al => al.Question);
+
             return query.ToList();
         }        
     }
