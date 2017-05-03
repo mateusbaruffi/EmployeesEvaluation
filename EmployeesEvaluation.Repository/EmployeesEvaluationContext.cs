@@ -53,7 +53,6 @@ namespace EmployeesEvaluation.Repository
                 .HasForeignKey(ur => ur.DepartmentManagerId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-
             modelBuilder.Entity<Department>()
                 .ToTable("Departments");
 
@@ -68,12 +67,15 @@ namespace EmployeesEvaluation.Repository
             modelBuilder.Entity<Evaluation>()
                 .ToTable("Evaluations").Ignore(e => e.Questions);
 
+            modelBuilder.Entity<Evaluation>()
+                .HasOne(e => e.DepartmentManager);
+
+            modelBuilder.Entity<Evaluation>()
+                 .HasOne(e => e.Season)
+                 .WithMany(s => s.Evaluations);
+
             modelBuilder.Entity<Question>()
                 .ToTable("Questions");
-
-            /*modelBuilder.Entity<Question>()
-                .Property(q => q.QuestionTypeId)
-                .IsRequired();*/
 
             modelBuilder.Entity<Question>()
                 .Property(d => d.CreatedAt)

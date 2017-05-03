@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace EmployeesEvaluation.Core.Models
 {
@@ -6,6 +7,7 @@ namespace EmployeesEvaluation.Core.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
-           
+
+        public ICollection<Evaluation> Evaluations { get; set; }           
     }
 }
