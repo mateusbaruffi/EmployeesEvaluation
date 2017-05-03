@@ -9,9 +9,10 @@ using EmployeesEvaluation.Core.Models;
 namespace EmployeesEvaluation.WEB.Migrations
 {
     [DbContext(typeof(EmployeesEvaluationContext))]
-    partial class EmployeesEvaluationContextModelSnapshot : ModelSnapshot
+    [Migration("20170501225141_AddUserTypeToUser")]
+    partial class AddUserTypeToUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.1")
@@ -78,13 +79,13 @@ namespace EmployeesEvaluation.WEB.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(new DateTime(2017, 5, 3, 8, 57, 51, 58, DateTimeKind.Local));
+                        .HasDefaultValue(new DateTime(2017, 5, 1, 19, 51, 41, 321, DateTimeKind.Local));
 
                     b.Property<string>("Name");
 
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(new DateTime(2017, 5, 3, 8, 57, 51, 60, DateTimeKind.Local));
+                        .HasDefaultValue(new DateTime(2017, 5, 1, 19, 51, 41, 321, DateTimeKind.Local));
 
                     b.HasKey("Id");
 
@@ -123,22 +124,6 @@ namespace EmployeesEvaluation.WEB.Migrations
                     b.ToTable("EvaluationQuestion");
                 });
 
-            modelBuilder.Entity("EmployeesEvaluation.Core.Models.LikertAnswer", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Description");
-
-                    b.Property<int>("QuestionId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("QuestionId");
-
-                    b.ToTable("LikertAnswer");
-                });
-
             modelBuilder.Entity("EmployeesEvaluation.Core.Models.Question", b =>
                 {
                     b.Property<int>("Id")
@@ -146,25 +131,33 @@ namespace EmployeesEvaluation.WEB.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(new DateTime(2017, 5, 3, 8, 57, 51, 65, DateTimeKind.Local));
+                        .HasDefaultValue(new DateTime(2017, 5, 1, 19, 51, 41, 321, DateTimeKind.Local));
 
-                    b.Property<string>("Description");
+                    b.Property<string>("Name");
 
-                    b.Property<int>("Limit");
-
-                    b.Property<string>("OwnershipId");
-
-                    b.Property<int>("QuestionType");
+                    b.Property<int>("QuestionTypeId");
 
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(new DateTime(2017, 5, 3, 8, 57, 51, 65, DateTimeKind.Local));
+                        .HasDefaultValue(new DateTime(2017, 5, 1, 19, 51, 41, 321, DateTimeKind.Local));
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OwnershipId");
+                    b.HasIndex("QuestionTypeId");
 
                     b.ToTable("Questions");
+                });
+
+            modelBuilder.Entity("EmployeesEvaluation.Core.Models.QuestionType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("QuestionTypes");
                 });
 
             modelBuilder.Entity("EmployeesEvaluation.Core.Models.Season", b =>
@@ -310,19 +303,11 @@ namespace EmployeesEvaluation.WEB.Migrations
                         .HasForeignKey("QuestionId");
                 });
 
-            modelBuilder.Entity("EmployeesEvaluation.Core.Models.LikertAnswer", b =>
-                {
-                    b.HasOne("EmployeesEvaluation.Core.Models.Question", "Question")
-                        .WithMany("LikertAnswers")
-                        .HasForeignKey("QuestionId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
             modelBuilder.Entity("EmployeesEvaluation.Core.Models.Question", b =>
                 {
-                    b.HasOne("EmployeesEvaluation.Core.Models.ApplicationUser", "Ownership")
-                        .WithMany()
-                        .HasForeignKey("OwnershipId");
+                    b.HasOne("EmployeesEvaluation.Core.Models.QuestionType", "QuestionType")
+                        .WithMany("Questions")
+                        .HasForeignKey("QuestionTypeId");
                 });
 
             modelBuilder.Entity("EmployeesEvaluation.Core.Models.UserRelation", b =>

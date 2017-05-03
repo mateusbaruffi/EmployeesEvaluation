@@ -9,9 +9,10 @@ using EmployeesEvaluation.Core.Models;
 namespace EmployeesEvaluation.WEB.Migrations
 {
     [DbContext(typeof(EmployeesEvaluationContext))]
-    partial class EmployeesEvaluationContextModelSnapshot : ModelSnapshot
+    [Migration("20170503115751_LikertAnswerDeleteCascade")]
+    partial class LikertAnswerDeleteCascade
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.1")

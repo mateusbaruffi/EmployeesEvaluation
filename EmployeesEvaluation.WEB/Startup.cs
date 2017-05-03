@@ -68,8 +68,19 @@ namespace EmployeesEvaluation.WEB
             services.AddScoped<IDepartmentRepository, DepartmentRepository>();
             services.AddTransient<IDepartmentService, DepartmentService>();
 
+            services.AddScoped<IQuestionRepository, QuestionRepository>();
+            services.AddTransient<IQuestionService, QuestionService>();
+
             services.AddScoped<ISeasonRepository, SeasonRepository>();
             services.AddTransient<ISeasonService, SeasonService>();
+
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddTransient<IUserService, UserService>();
+
+            services.AddScoped<IUserRelationRepository, UserRelationRepository>();
+            services.AddTransient<IUserRelationService, UserRelationService>();
+
+            services.AddScoped<ILikertAnswerRepository, LikertAnswerRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -83,7 +94,18 @@ namespace EmployeesEvaluation.WEB
 
                 config.CreateMap<Season, SeasonDto>();
                 config.CreateMap<SeasonDto, Season>();
+
+                config.CreateMap<Question, QuestionDto>();
+                config.CreateMap<QuestionDto, Question>();
+
+                config.CreateMap<QuestionType, QuestionTypeDto>();
+                config.CreateMap<QuestionTypeDto, QuestionType>();
+
+                config.CreateMap<LikertAnswer, LikertAnswerDto>();
+                config.CreateMap<LikertAnswerDto, LikertAnswer>();
+
                 //config.CreateMap<DepartmentDto, Department>().ForMember(property => property.Id, options => options.Ignore());
+
             });
 
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));

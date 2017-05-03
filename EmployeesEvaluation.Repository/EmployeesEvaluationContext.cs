@@ -88,7 +88,8 @@ namespace EmployeesEvaluation.Repository
 
             modelBuilder.Entity<LikertAnswer>()
                 .HasOne(la => la.Question)
-                .WithMany(q => q.LikertAnswers);
+                .WithMany(q => q.LikertAnswers)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Season>()
                 .ToTable("Seasons");
