@@ -80,6 +80,10 @@ namespace EmployeesEvaluation.WEB
             services.AddScoped<IUserRelationRepository, UserRelationRepository>();
             services.AddTransient<IUserRelationService, UserRelationService>();
 
+            services.AddScoped<IEvaluationRepository, EvaluationRepository>();
+            services.AddTransient<IEvaluationService, EvaluationService>();
+
+            services.AddScoped<IEvaluationQuestionRepository, EvaluationQuestionRepository>();
             services.AddScoped<ILikertAnswerRepository, LikertAnswerRepository>();
         }
 
@@ -103,6 +107,18 @@ namespace EmployeesEvaluation.WEB
 
                 config.CreateMap<LikertAnswer, LikertAnswerDto>();
                 config.CreateMap<LikertAnswerDto, LikertAnswer>();
+
+                config.CreateMap<Evaluation, EvaluationDto>()
+                    .ForMember(dto => dto.Questions, opt => opt.MapFrom(x => x.EvaluationQuestions));
+
+                config.CreateMap<EvaluationDto, Evaluation>();
+
+                config.CreateMap<EvaluationQuestion, QuestionDto>()
+                        .ForMember(dto => dto.Description, opt => opt.MapFrom(e => e.Question.Description))
+                        ;
+
+                config.CreateMap<EvaluationQuestion, EvaluationQuestionDto>();
+                config.CreateMap<EvaluationQuestionDto, EvaluationQuestion>().ForMember(property => property.Id, options => options.Ignore());
 
                 //config.CreateMap<DepartmentDto, Department>().ForMember(property => property.Id, options => options.Ignore());
 

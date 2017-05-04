@@ -36,6 +36,15 @@ namespace EmployeesEvaluation.WEB.Controllers.Api
             return Json(dsResult);
         }
 
+        [HttpGet("FindBy")]
+        public IActionResult FindBy([DataSourceRequest]DataSourceRequest request, string text)
+        {
+           var result = _questionService.FindBy(q => q.Description.Contains(text)).Select(Mapper.Map<Question, QuestionDto>);
+            //var result = _questionService.All().Select(Mapper.Map<Question, QuestionDto>);
+            //var dsResult = result.ToDataSourceResult(request);
+            return Json(result.ToList());
+        }
+
         [HttpPost("Delete")]
         public ActionResult Delete([DataSourceRequest] DataSourceRequest request, QuestionDto questionDto)
         {
