@@ -102,12 +102,13 @@ namespace EmployeesEvaluation.Repository
             modelBuilder.Entity<EvaluationQuestion>()
                 .HasOne(eq => eq.Evaluation)
                 .WithMany(e => e.EvaluationQuestions)
-                .HasForeignKey(eq => eq.EvaluationId);
+                .HasForeignKey(eq => eq.EvaluationId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<EvaluationQuestion>()
                 .HasOne(eq => eq.Question)
                 .WithMany(q => q.EvaluationQuestions)
-                .HasForeignKey(eq => eq.QuestionId); 
+                .HasForeignKey(eq => eq.QuestionId);
             
         }        
         

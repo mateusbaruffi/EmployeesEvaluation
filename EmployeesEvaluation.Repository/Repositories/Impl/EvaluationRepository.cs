@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System;
 
 namespace EmployeesEvaluation.Repository.Repositories.Impl
 {
@@ -24,6 +25,15 @@ namespace EmployeesEvaluation.Repository.Repositories.Impl
             query = query.Include(a => a.EvaluationQuestions).ThenInclude(al => al.Question);
 
             return query.ToList();
-        }        
+        }
+
+        public Evaluation GetSingleIncludingAll(Expression<Func<Evaluation, bool>> predicate)
+        {
+            IQueryable<Evaluation> query = _context.Set<Evaluation>();
+            query = query.Include(e => e.EvaluationQuestions).ThenInclude(eq => eq.Question);
+            return query.Where(predicate).FirstOrDefault();
+        }
+
+
     }
 }
