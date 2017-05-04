@@ -35,6 +35,11 @@ namespace EmployeesEvaluation.Services.Impl
             return _evaluations;
         }
 
+        public Evaluation GetSingleIncludingAll(Expression<Func<Evaluation, bool>> predicate)
+        {
+            return _evaluationRepository.GetSingleIncludingAll(predicate);
+        }
+
         public IEnumerable<Evaluation> All() 
         { 
             return _evaluationRepository.GetAll(); 
@@ -70,7 +75,41 @@ namespace EmployeesEvaluation.Services.Impl
 
             _evaluationRepository.Commit();
         } 
+
+        public void CreateWithExistingQuestions(Evaluation evaluation, List<int> questionIds)
+        {
+            // add evaluation
+            _evaluationRepository.Add(evaluation);
+
+            // foreach existing question, add a new evaluationQuestion
+            foreach (int questionId in questionIds)
+            {
+                EvaluationQuestion eq = new EvaluationQuestion()
+                {
+                    EvaluationId = evaluation.Id,
+                    QuestionId = questionId
+                };
+
+                _evaluationQuestionRepository.Add(eq);
+            }
+
+            _evaluationRepository.Commit();
+        }
         
+        public void UpdateWithExistingQuestions(Evaluation evaluation, List<int> questionIds)
+        {
+            // update the evaluation
+            _evaluationRepository.Update(evaluation);
+
+            // add questions to evaluationquestion context
+            BuildEvaluationQuestion(evaluation.Id, questionIds);
+
+            // remove the older questions in EvaluationQuestion
+            _evaluationQuestionRepository.DeleteWhere(eq => eq.EvaluationId == evaluation.Id);
+
+            _evaluationRepository.Commit();
+        }
+
         public void Update(Evaluation evaluation) 
         { 
             _evaluationRepository.Update(evaluation); 
@@ -83,5 +122,20 @@ namespace EmployeesEvaluation.Services.Impl
             _evaluationRepository.Delete(evaluation); 
             _evaluationRepository.Commit(); 
         } 
+
+        private void BuildEvaluationQuestion(int evaluationId, List<int> questionIds)
+        {
+            // foreach existing question, add a new evaluationQuestion
+            foreach (int questionId in questionIds)
+            {
+                EvaluationQuestion eq = new EvaluationQuestion()
+                {
+                    EvaluationId = evaluationId,
+                    QuestionId = questionId
+                };
+
+                _evaluationQuestionRepository.Add(eq);
+            }
+        }
     }
 }

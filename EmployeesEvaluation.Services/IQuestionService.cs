@@ -9,7 +9,7 @@ namespace EmployeesEvaluation.Services
 
     public interface IQuestionService : IGenericService<Question>
     {
-  
+        IEnumerable<Question> FindBy(Expression<Func<Question, bool>> predicate);
     }
 
 }

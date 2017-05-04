@@ -46,6 +46,10 @@ namespace EmployeesEvaluation.Services.Impl
             return _questionRepository.GetSingleIncluding(predicate, includeProperties);
         }
 
+        public virtual IEnumerable<Question> FindBy(Expression<Func<Question, bool>> predicate)
+        {
+            return _questionRepository.FindBy(predicate);
+        }
 
         public void Create(Question question) 
         {
