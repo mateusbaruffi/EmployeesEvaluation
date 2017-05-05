@@ -15,6 +15,10 @@ namespace EmployeesEvaluation.Services
 
         void UpdateWithExistingQuestions(Evaluation evaluation, List<int> questionIds);
 
+        void AssignEvaluationEmployee(EvaluationAssigned evaluationAssigned);
+
+        Evaluation GetEvaluationAssigned(int evaluationId, string employeeId);
+
         Evaluation GetSingleIncludingAll(Expression<Func<Evaluation, bool>> predicate);
     }
 

@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using System.Linq;
 using EmployeesEvaluation.Core.Models;
 using EmployeesEvaluation.Repository.Repositories;
+using Microsoft.Extensions.Logging;
 
 namespace EmployeesEvaluation.Services.Impl
 {
@@ -11,14 +12,18 @@ namespace EmployeesEvaluation.Services.Impl
     {
         private IEvaluationRepository _evaluationRepository;
         private IQuestionRepository _questionRepository;
-
+        private IEvaluationAssignedRepository _evaluationAssignedRepository;
         private IEvaluationQuestionRepository _evaluationQuestionRepository;
- 
-        public EvaluationService(IEvaluationRepository evaluationRepository, IQuestionRepository questionRepository, IEvaluationQuestionRepository evaluationQuestionRepository) 
-        { 
+
+        private readonly ILogger _logger;
+
+        public EvaluationService(ILogger<EvaluationService> logger, IEvaluationAssignedRepository evaluationAssignedRepository, IEvaluationRepository evaluationRepository, IQuestionRepository questionRepository, IEvaluationQuestionRepository evaluationQuestionRepository) 
+        {
+            this._logger = logger;
             this._evaluationRepository = evaluationRepository; 
             this._questionRepository = questionRepository;
-            this._evaluationQuestionRepository = evaluationQuestionRepository; 
+            this._evaluationQuestionRepository = evaluationQuestionRepository;
+            this._evaluationAssignedRepository = evaluationAssignedRepository;
         } 
 
         public IEnumerable<Evaluation> LoadAll()
@@ -81,17 +86,8 @@ namespace EmployeesEvaluation.Services.Impl
             // add evaluation
             _evaluationRepository.Add(evaluation);
 
-            // foreach existing question, add a new evaluationQuestion
-            foreach (int questionId in questionIds)
-            {
-                EvaluationQuestion eq = new EvaluationQuestion()
-                {
-                    EvaluationId = evaluation.Id,
-                    QuestionId = questionId
-                };
-
-                _evaluationQuestionRepository.Add(eq);
-            }
+            // add questions to evaluationquestion context
+            BuildEvaluationQuestion(evaluation.Id, questionIds);
 
             _evaluationRepository.Commit();
         }
@@ -105,7 +101,7 @@ namespace EmployeesEvaluation.Services.Impl
             BuildEvaluationQuestion(evaluation.Id, questionIds);
 
             // remove the older questions in EvaluationQuestion
-            _evaluationQuestionRepository.DeleteWhere(eq => eq.EvaluationId == evaluation.Id);
+            _evaluationQuestionRepository.DeleteWhere(eq => eq.EvaluationId == evaluation.Id && !questionIds.Contains(eq.QuestionId));
 
             _evaluationRepository.Commit();
         }
@@ -121,20 +117,48 @@ namespace EmployeesEvaluation.Services.Impl
             Evaluation evaluation = Get(id); 
             _evaluationRepository.Delete(evaluation); 
             _evaluationRepository.Commit(); 
-        } 
+        }
+
+        public void AssignEvaluationEmployee(EvaluationAssigned evaluationAssigned)
+        {
+            _evaluationAssignedRepository.Add(evaluationAssigned);
+            _evaluationAssignedRepository.Commit();
+        }
+
+        public Evaluation GetEvaluationAssigned(int evaluationId, string employeeId)
+        {
+            EvaluationAssigned evaluationAssigned = _evaluationAssignedRepository.FindBy(ea => ea.EvaluationId == evaluationId && ea.EmployeeId == employeeId).FirstOrDefault();
+
+            Evaluation evaluation = null;
+            
+            // if there is an evaluation assigned, return the evaluation
+            if (evaluationAssigned != null)
+            {
+                evaluation = _evaluationRepository.GetSingleIncludingAll(e => e.Id == evaluationId);
+            }
+
+            return evaluation;
+        }
 
         private void BuildEvaluationQuestion(int evaluationId, List<int> questionIds)
         {
             // foreach existing question, add a new evaluationQuestion
             foreach (int questionId in questionIds)
             {
-                EvaluationQuestion eq = new EvaluationQuestion()
-                {
-                    EvaluationId = evaluationId,
-                    QuestionId = questionId
-                };
+                // verify existing relations in EvaluationQuestion
+                EvaluationQuestion existQuestion =_evaluationQuestionRepository.FindBy(ex => ex.EvaluationId == evaluationId && ex.QuestionId == questionId).FirstOrDefault();
 
-                _evaluationQuestionRepository.Add(eq);
+                // Add EvaluationQuestion relation if there is no previous relation between this evaluation and the questions 
+                if (existQuestion == null)
+                {
+                    EvaluationQuestion eq = new EvaluationQuestion()
+                    {
+                        EvaluationId = evaluationId,
+                        QuestionId = questionId
+                    };
+
+                    _evaluationQuestionRepository.Add(eq);
+                }
             }
         }
     }
