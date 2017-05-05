@@ -24,6 +24,17 @@ namespace EmployeesEvaluation.Repository.Repositories.Impl
             return _context.Set<UserRelation>().Where(predicate);
         }
 
+        public virtual IEnumerable<UserRelation> FindByIncluding(Expression<Func<UserRelation, bool>> predicate, params Expression<Func<UserRelation, object>>[] includeProperties)
+        {
+            IQueryable<UserRelation> query = _context.Set<UserRelation>();
+            foreach (var includeProperty in includeProperties)
+            {
+                query = query.Include(includeProperty);
+            }
+
+            return query.Where(predicate);
+        }
+
         public virtual void Add(UserRelation ur)
         {
             EntityEntry dbEntityEntry = _context.Entry<UserRelation>(ur);

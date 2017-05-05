@@ -14,7 +14,8 @@ namespace EmployeesEvaluation.Services
         IEnumerable<ApplicationUser> All();
         void Add(UserRelation ur);
         IEnumerable<ApplicationUser> FindBy(Expression<Func<ApplicationUser, bool>> predicate);
-        
+        IEnumerable<ApplicationUser> FindByIncluding(Expression<Func<ApplicationUser, bool>> predicate, params Expression<Func<ApplicationUser, object>>[] includeProperties);
+        IEnumerable<ApplicationUser> AllIncluding(params Expression<Func<ApplicationUser, object>>[] includeProperties);
 
     }
 }

@@ -12,8 +12,10 @@ namespace EmployeesEvaluation.Services
     {
 
         IEnumerable<UserRelation> FindBy(Expression<Func<UserRelation, bool>> predicate);
+        IEnumerable<UserRelation> FindByIncluding(Expression<Func<UserRelation, bool>> predicate, params Expression<Func<UserRelation, object>>[] includeProperties);
         void DeleteWhere(Expression<Func<UserRelation, bool>> predicate);
         void Create(UserRelation ur);
+        IEnumerable<ApplicationUser> GetEmployeesByDepartmentManagerId(string departmentManagerId);
 
     }
 }

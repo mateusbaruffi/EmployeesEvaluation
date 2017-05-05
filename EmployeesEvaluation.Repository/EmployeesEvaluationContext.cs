@@ -17,6 +17,7 @@ namespace EmployeesEvaluation.Repository
         public DbSet<Evaluation> Evaluation { get; set; }
         public DbSet<Question> Question { get; set; }
         public DbSet<EvaluationQuestion> EvaluationQuestion { get; set; }
+        public DbSet<EvaluationResponse> EvaluationResponse { get; set; }
         public DbSet<LikertAnswer> LikertAnswer { get; set; }
         public DbSet<Season> Season { get; set; }
         public DbSet<UserRelation> UserRelation { get; set; }
@@ -74,6 +75,29 @@ namespace EmployeesEvaluation.Repository
                  .HasOne(e => e.Season)
                  .WithMany(s => s.Evaluations);
 
+            modelBuilder.Entity<EvaluationResponse>()
+                   .ToTable("EvaluationResponses");
+
+            modelBuilder.Entity<EvaluationResponse>()
+                   .HasOne(er => er.Evaluation)
+                   .WithMany(e => e.EvaluationResponses)
+                   .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<EvaluationResponse>()
+                   .HasOne(er => er.Employee)
+                   .WithMany(au => au.EvaluationResponses);
+
+            modelBuilder.Entity<QuestionAnswer>()
+                .HasOne(qa => qa.EvaluationResponse)
+                .WithMany(evr => evr.QuestionAnswers)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<QuestionAnswer>()
+                .HasIndex(qa => qa.QuestionId);
+
+            modelBuilder.Entity<QuestionAnswer>()
+                .HasIndex(qa => qa.LikertAnswerId);
+
             modelBuilder.Entity<Question>()
                 .ToTable("Questions");
 
@@ -109,7 +133,21 @@ namespace EmployeesEvaluation.Repository
                 .HasOne(eq => eq.Question)
                 .WithMany(q => q.EvaluationQuestions)
                 .HasForeignKey(eq => eq.QuestionId);
-            
+
+            modelBuilder.Entity<EvaluationAssigned>()
+              .ToTable("EvaluationAssigned");
+
+            modelBuilder.Entity<EvaluationAssigned>()
+                .HasOne(ea => ea.Evaluation)
+                .WithMany(e => e.EvaluationsAssigned)
+                .HasForeignKey(ea => ea.EvaluationId);
+
+            modelBuilder.Entity<EvaluationAssigned>()
+                .HasOne(ea => ea.Employee)
+                .WithMany(au => au.EvaluationsAssigned)
+                .HasForeignKey(ea => ea.EmployeeId);
+
+
         }        
         
 

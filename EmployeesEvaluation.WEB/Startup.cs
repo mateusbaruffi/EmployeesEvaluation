@@ -83,16 +83,25 @@ namespace EmployeesEvaluation.WEB
             services.AddScoped<IEvaluationRepository, EvaluationRepository>();
             services.AddTransient<IEvaluationService, EvaluationService>();
 
+            services.AddScoped<IEvaluationResponseRepository, EvaluationResponseRepository>();
             services.AddScoped<IEvaluationQuestionRepository, EvaluationQuestionRepository>();
+            services.AddScoped<IEvaluationAssignedRepository, EvaluationAssignedRepository>();
             services.AddScoped<ILikertAnswerRepository, LikertAnswerRepository>();
+
+            services.Configure<AuthMessageSenderOptions>(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
 
+            //loggerFactory.AddDebug(LogLevel.Debug);
+
             Mapper.Initialize(config =>
             {
+                config.CreateMap<ApplicationUser, UserDto>();
+                //config.CreateMap<UserDto, ApplicationUser>();
+
                 config.CreateMap<Department, DepartmentDto>();
                 config.CreateMap<DepartmentDto, Department>();
 
@@ -105,6 +114,10 @@ namespace EmployeesEvaluation.WEB
                 config.CreateMap<QuestionType, QuestionTypeDto>();
                 config.CreateMap<QuestionTypeDto, QuestionType>();
 
+                config.CreateMap<QuestionAnswer, QuestionAnswerDto>();
+                config.CreateMap<QuestionAnswerDto, QuestionAnswer>()
+                .ForMember(dest => dest.FileName, opt => opt.MapFrom(src => src.File.FileName));
+
                 config.CreateMap<LikertAnswer, LikertAnswerDto>();
                 config.CreateMap<LikertAnswerDto, LikertAnswer>();
 
@@ -113,14 +126,21 @@ namespace EmployeesEvaluation.WEB
 
                 config.CreateMap<EvaluationDto, Evaluation>();
 
+                config.CreateMap<EvaluationAssigned, EvaluationAssignedDto>();
+                config.CreateMap<EvaluationAssignedDto, EvaluationAssigned>();
+
                 config.CreateMap<EvaluationQuestion, QuestionDto>()
+                        .ForMember(dto => dto.Id, opt => opt.MapFrom(e => e.Question.Id))
                         .ForMember(dto => dto.Description, opt => opt.MapFrom(e => e.Question.Description))
-                        ;
+                        .ForMember(dto => dto.QuestionType, opt => opt.MapFrom(e => e.Question.QuestionType))
+                        .ForMember(dto => dto.LikertAnswers, opt => opt.MapFrom(e => e.Question.LikertAnswers));
+                
 
                 config.CreateMap<EvaluationQuestion, EvaluationQuestionDto>();
                 config.CreateMap<EvaluationQuestionDto, EvaluationQuestion>().ForMember(property => property.Id, options => options.Ignore());
 
-                //config.CreateMap<DepartmentDto, Department>().ForMember(property => property.Id, options => options.Ignore());
+                config.CreateMap<EvaluationResponse, EvaluationResponseDto>();
+                config.CreateMap<EvaluationResponseDto, EvaluationResponse>();
 
             });
 

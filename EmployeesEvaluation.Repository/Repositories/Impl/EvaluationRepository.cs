@@ -30,7 +30,7 @@ namespace EmployeesEvaluation.Repository.Repositories.Impl
         public Evaluation GetSingleIncludingAll(Expression<Func<Evaluation, bool>> predicate)
         {
             IQueryable<Evaluation> query = _context.Set<Evaluation>();
-            query = query.Include(e => e.EvaluationQuestions).ThenInclude(eq => eq.Question);
+            query = query.Include(e => e.EvaluationQuestions).ThenInclude(eq => eq.Question).ThenInclude(q => q.LikertAnswers);
             return query.Where(predicate).FirstOrDefault();
         }
 

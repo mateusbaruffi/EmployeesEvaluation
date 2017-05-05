@@ -26,6 +26,11 @@ namespace EmployeesEvaluation.Services.Impl
             return _userRepository.GetAll();
         }
 
+        public IEnumerable<ApplicationUser> AllIncluding(params Expression<Func<ApplicationUser, object>>[] includeProperties)
+        {
+            return _userRepository.AllIncluding(includeProperties);
+        }
+
         public void Add(UserRelation ur)
         {
             _userRelationRepository.Add(ur);
@@ -35,5 +40,11 @@ namespace EmployeesEvaluation.Services.Impl
         {
             return _userRepository.FindBy(predicate);
         }
+
+        public IEnumerable<ApplicationUser> FindByIncluding(Expression<Func<ApplicationUser, bool>> predicate, params Expression<Func<ApplicationUser, object>>[] includeProperties)
+        {
+            return _userRepository.FindByIncluding(predicate, includeProperties);
+        }
+
     }
 }

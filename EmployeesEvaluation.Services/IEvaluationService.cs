@@ -15,6 +15,8 @@ namespace EmployeesEvaluation.Services
 
         void UpdateWithExistingQuestions(Evaluation evaluation, List<int> questionIds);
 
+        void CreateEvaluationResponse(EvaluationResponse evaluationResponse);
+
         void AssignEvaluationEmployee(EvaluationAssigned evaluationAssigned);
 
         Evaluation GetEvaluationAssigned(int evaluationId, string employeeId);

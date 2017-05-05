@@ -9,6 +9,11 @@ using AutoMapper;
 using EmployeesEvaluation.Core.Models;
 using EmployeesEvaluation.Services;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using EmployeesEvaluation.WEB.Services;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Net.Http.Headers;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
 
 namespace EmployeesEvaluation.WEB.Controllers
 {
@@ -18,13 +23,17 @@ namespace EmployeesEvaluation.WEB.Controllers
         private readonly IEvaluationService _evaluationService;
         private readonly IUserService _userService;
         private readonly ISeasonService _seasonService;
+        private readonly IEmailSender _emailSender;
+        private readonly IHostingEnvironment _environment;
 
-        public EvaluationsController(ILogger<EvaluationsController> logger, ISeasonService seasonService, IEvaluationService evaluationService, IUserService userService)
+        public EvaluationsController(IHostingEnvironment hostingEnviroment, IEmailSender emailSender, ILogger<EvaluationsController> logger, ISeasonService seasonService, IEvaluationService evaluationService, IUserService userService)
         {
             this._logger = logger;
             this._evaluationService = evaluationService;
             this._userService = userService;
             this._seasonService = seasonService;
+            this._emailSender = emailSender;
+            this._environment = hostingEnviroment;
         }
 
 
@@ -94,5 +103,85 @@ namespace EmployeesEvaluation.WEB.Controllers
 
             return RedirectToAction("Index", "Evaluations");
         }
+
+        public IActionResult Assign()
+        {
+            return View();
+        }
+
+        public async Task<IActionResult> SendEmail()
+        {
+
+            var name = "Mr Baruffi";
+            
+            await _emailSender.SendEmailAsync("mateusbaruffi@gmail.com", "First test using SendGrid",
+                $"This is my first teste using <strong>SendGrid</strong> ok {name}");
+
+            return RedirectToAction("Index", "Evaluations");
+        }
+
+        public IActionResult AssignSave(EvaluationAssignedDto evaluationAssignedDto)
+        {
+
+
+            var evaluationAssigned = Mapper.Map<EvaluationAssignedDto, EvaluationAssigned>(evaluationAssignedDto);
+
+            _evaluationService.AssignEvaluationEmployee(evaluationAssigned);
+
+            return RedirectToAction("Index", "Evaluations");
+        }
+
+
+        public IActionResult Reply(int id, string employeeId)
+        {
+            var evaluation = _evaluationService.GetEvaluationAssigned(id, employeeId);
+            var evaluationDto = Mapper.Map<Evaluation, EvaluationDto>(evaluation);
+
+            var evaluationReplyDto = new EvaluationResponseDto();
+            evaluationReplyDto.EvaluationDto = evaluationDto;
+            evaluationReplyDto.EvaluationId = id;
+            evaluationReplyDto.EmployeeId = employeeId;
+
+            if (evaluation == null)
+                _logger.LogInformation("--------------- This Employee Has No Evaluation To Answer ");
+            else
+            {
+                // verify if this evaluation has already been answered
+            }
+
+            return View(evaluationReplyDto);
+        }
+
+        public async Task<IActionResult> SaveReply(EvaluationResponseDto evaluationResponseDto, IFormFile File)
+        {
+            _logger.LogInformation("---------------- " + evaluationResponseDto );
+
+            await UploadAnswersFile(evaluationResponseDto.QuestionAnswers);
+
+            var evaluationResponse = Mapper.Map<EvaluationResponseDto, EvaluationResponse>(evaluationResponseDto);
+            _evaluationService.CreateEvaluationResponse(evaluationResponse);
+
+            return RedirectToAction("Index", "Evaluations");
+        }
+
+        private async Task UploadAnswersFile(ICollection<QuestionAnswerDto> questionAnswers)
+        {
+            var uploads = Path.Combine(_environment.WebRootPath, "uploads");
+
+            foreach (var answer in questionAnswers)
+            {
+                if ((answer.File != null) && (answer.File.Length > 0))
+                {
+                    _logger.LogInformation("--------------------- Starting File Upload");
+
+                    using (var fileStream = new FileStream(Path.Combine(uploads, answer.File.FileName), FileMode.Create))
+                    {
+                        await answer.File.CopyToAsync(fileStream);
+                    }
+                }
+            }
+        }
+
+
     }
 }

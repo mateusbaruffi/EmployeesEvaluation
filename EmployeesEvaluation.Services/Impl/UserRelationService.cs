@@ -25,6 +25,25 @@ namespace EmployeesEvaluation.Services.Impl
             return _userRelationRepository.FindBy(predicate);
         }
 
+        public IEnumerable<UserRelation> FindByIncluding(Expression<Func<UserRelation, bool>> predicate, params Expression<Func<UserRelation, object>>[] includeProperties)
+        {
+            return _userRelationRepository.FindByIncluding(predicate, includeProperties);
+        }
+
+        public IEnumerable<ApplicationUser> GetEmployeesByDepartmentManagerId(string departmentManagerId)
+        {
+            ICollection<ApplicationUser> Employees = new List<ApplicationUser>();
+            //IEnumerable<UserRelation> usersRelations = _userRelationRepository.GetEmployeesByDepartmentManagerId(departmentManagerId);
+            IEnumerable<UserRelation> usersRelations = _userRelationRepository.FindByIncluding(ur => ur.DepartmentManagerId == departmentManagerId, ure => ure.Employee);
+
+            foreach (var ur in usersRelations)
+            {
+                Employees.Add(ur.Employee);
+            }
+
+            return Employees.AsEnumerable();
+        }
+
         public void DeleteWhere(Expression<Func<UserRelation, bool>> predicate)
         {
             _userRelationRepository.DeleteWhere(predicate);

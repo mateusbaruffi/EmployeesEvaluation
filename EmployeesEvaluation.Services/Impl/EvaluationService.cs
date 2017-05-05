@@ -14,16 +14,18 @@ namespace EmployeesEvaluation.Services.Impl
         private IQuestionRepository _questionRepository;
         private IEvaluationAssignedRepository _evaluationAssignedRepository;
         private IEvaluationQuestionRepository _evaluationQuestionRepository;
+        private IEvaluationResponseRepository _evaluationResponseRepository;
 
         private readonly ILogger _logger;
 
-        public EvaluationService(ILogger<EvaluationService> logger, IEvaluationAssignedRepository evaluationAssignedRepository, IEvaluationRepository evaluationRepository, IQuestionRepository questionRepository, IEvaluationQuestionRepository evaluationQuestionRepository) 
+        public EvaluationService(ILogger<EvaluationService> logger, IEvaluationResponseRepository evaluationResponseRepository, IEvaluationAssignedRepository evaluationAssignedRepository, IEvaluationRepository evaluationRepository, IQuestionRepository questionRepository, IEvaluationQuestionRepository evaluationQuestionRepository) 
         {
             this._logger = logger;
             this._evaluationRepository = evaluationRepository; 
             this._questionRepository = questionRepository;
             this._evaluationQuestionRepository = evaluationQuestionRepository;
             this._evaluationAssignedRepository = evaluationAssignedRepository;
+            this._evaluationResponseRepository = evaluationResponseRepository;
         } 
 
         public IEnumerable<Evaluation> LoadAll()
@@ -117,6 +119,12 @@ namespace EmployeesEvaluation.Services.Impl
             Evaluation evaluation = Get(id); 
             _evaluationRepository.Delete(evaluation); 
             _evaluationRepository.Commit(); 
+        }
+
+        public void CreateEvaluationResponse(EvaluationResponse evaluationResponse)
+        {
+            _evaluationResponseRepository.Add(evaluationResponse);
+            _evaluationResponseRepository.Commit();
         }
 
         public void AssignEvaluationEmployee(EvaluationAssigned evaluationAssigned)

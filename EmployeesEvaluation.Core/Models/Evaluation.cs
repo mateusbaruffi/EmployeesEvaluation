@@ -15,5 +15,8 @@ namespace EmployeesEvaluation.Core.Models
         public string DepartmentManagerId { get; set; }
         public ICollection<EvaluationQuestion> EvaluationQuestions { get; set; }
         public virtual ICollection<Question> Questions { get; set; }
+        public virtual ICollection<EvaluationAssigned> EvaluationsAssigned { get; set; }
+        public virtual ICollection<EvaluationResponse> EvaluationResponses { get; set; }
+
     }
 }

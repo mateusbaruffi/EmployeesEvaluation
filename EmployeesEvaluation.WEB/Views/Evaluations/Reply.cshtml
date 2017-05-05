@@ -1,0 +1,102 @@
+
+@model EmployeesEvaluation.WEB.Dtos.EvaluationResponseDto
+@{
+    ViewData["Title"] = "Reply Evaluation";
+}
+
+<h2>@ViewData["Title"].</h2>
+
+<form asp-controller="Evaluations" asp-action="SaveReply" enctype="multipart/form-data" method="post" class="form-horizontal">
+    <h4>Create evaluation response.</h4>
+    <hr />
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+
+
+    <div class="form-group">
+        <div class="col-md-10">
+            aqui vai o titulo
+        </div>
+    </div>
+    
+    <div class="form-group">
+        
+        <div class="col-md-10">
+           aqui a introduction
+        </div>
+    </div>    
+
+    
+    
+    @foreach (var question in Model.EvaluationDto.Questions.Select((value,i) => new {i, value}))
+    {
+        <div class="form-group">
+            <div class="col-md-10">
+                @question.value.Description
+            </div>
+        </div>
+
+        if (question.value.QuestionType == QuestionTypeDto.LikertScale)
+        {
+            @foreach (var likertAnswer in question.value.LikertAnswers)
+            {
+                <div class="form-group">
+                    <input asp-for="@Model.QuestionAnswers[@question.i].QuestionId" type="hidden" value="@question.value.Id" />
+                    <label asp-for="@Model.QuestionAnswers[@question.i].LikertAnswerId" class="col-md-2 control-label"></label>
+                    <div class="col-md-10">
+                        <input asp-for="@Model.QuestionAnswers[@question.i].LikertAnswerId" type="radio" value="@likertAnswer.Id" /> @likertAnswer.Description
+                    </div>
+                </div>
+            }
+        }
+        else if (question.value.QuestionType == QuestionTypeDto.OpenEnded)
+        {
+            <div class="form-group">
+                <input asp-for="@Model.QuestionAnswers[@question.i].QuestionId" type="hidden" value="@question.value.Id" />
+                <label asp-for="@Model.QuestionAnswers[@question.i].OpenEndedAnswer" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <textarea asp-for="@Model.QuestionAnswers[@question.i].OpenEndedAnswer" class="form-control" rows="5" cols="40"></textarea>
+                    <span asp-validation-for="@Model.QuestionAnswers[@question.i].OpenEndedAnswer" class="text-danger"></span>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="form-group">
+                <input asp-for="@Model.QuestionAnswers[@question.i].QuestionId" type="hidden" value="@question.value.Id" />
+                <label asp-for="@Model.QuestionAnswers[@question.i].File" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <input asp-for="@Model.QuestionAnswers[@question.i].File" />
+                </div>
+            </div>
+        }
+
+
+
+    }
+
+    <div class="form-group">
+        
+        <div class="col-md-10">
+            disclosure
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input asp-for="@Model.EvaluationId" type="hidden" value="@Model.EvaluationId" />
+            <input asp-for="@Model.EmployeeId" type="hidden" value="@Model.EmployeeId" />
+            <button type="submit" class="btn btn-default">Save</button>
+        </div>
+    </div>
+</form>
+
+
+@section scripts {
+  
+    <script>
+
+    </script>
+
+}

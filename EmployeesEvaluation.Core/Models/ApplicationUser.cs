@@ -14,6 +14,8 @@ namespace EmployeesEvaluation.Core.Models
 
         public virtual ICollection<UserRelation> DepartmentManagersRelated { get; set; }
         public virtual ICollection<UserRelation> EmployeesRelated { get; set; }
+        public virtual ICollection<EvaluationAssigned> EvaluationsAssigned { get; set; }
+        public virtual ICollection<EvaluationResponse> EvaluationResponses { get; set; }
 
     }
 }
