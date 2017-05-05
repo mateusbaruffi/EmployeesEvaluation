@@ -109,24 +109,20 @@ namespace EmployeesEvaluation.WEB.Controllers
             return View();
         }
 
-        public async Task<IActionResult> SendEmail()
+        public async Task<IActionResult> AssignSave(EvaluationAssignedDto evaluationAssignedDto)
         {
-
-            var name = "Mr Baruffi";
-            
-            await _emailSender.SendEmailAsync("mateusbaruffi@gmail.com", "First test using SendGrid",
-                $"This is my first teste using <strong>SendGrid</strong> ok {name}");
-
-            return RedirectToAction("Index", "Evaluations");
-        }
-
-        public IActionResult AssignSave(EvaluationAssignedDto evaluationAssignedDto)
-        {
-
-
             var evaluationAssigned = Mapper.Map<EvaluationAssignedDto, EvaluationAssigned>(evaluationAssignedDto);
 
-            _evaluationService.AssignEvaluationEmployee(evaluationAssigned);
+            try
+            {
+                _evaluationService.AssignEvaluationEmployee(evaluationAssigned);
+                await SendEmail(evaluationAssignedDto);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("-------------- Something went wrong -----------", e);
+            }
+            
 
             return RedirectToAction("Index", "Evaluations");
         }
@@ -180,6 +176,19 @@ namespace EmployeesEvaluation.WEB.Controllers
                     }
                 }
             }
+        }
+
+        private async Task SendEmail(EvaluationAssignedDto evaluationAssignedDto)
+        {
+            // get the employee's email
+            var employee = _userService.FindBy(u => u.Id == evaluationAssignedDto.EmployeeId).FirstOrDefault();
+            var evaluationId = evaluationAssignedDto.EvaluationId;
+
+            var link = $"http://localhost:63585/Evaluations/Reply/{evaluationId}?employeeId={employee.Id}";
+           
+            await _emailSender.SendEmailAsync(employee.Email, "Employees Evaluation",
+                $"Hi {employee.Email}, <br /> we would like you to take a time to fill up our evaluation.<br /><br /> <a href='{link}' target='_blank'>Fill Up the Evaluation</a>");
+            
         }
 
 

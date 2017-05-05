@@ -33,7 +33,7 @@ namespace EmployeesEvaluation.WEB.Services
             var client = new SendGridClient(apiKey);
             var msg = new SendGridMessage()
             {
-                From = new EmailAddress("Joe@contoso.com", "Joe Smith"),
+                From = new EmailAddress("mateusbaruffi@chinet.org", "Mateus Baruffi"),
                 Subject = subject,
                 PlainTextContent = message,
                 HtmlContent = message
