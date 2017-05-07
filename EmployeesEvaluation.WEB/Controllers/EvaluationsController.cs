@@ -129,6 +129,14 @@ namespace EmployeesEvaluation.WEB.Controllers
             return RedirectToAction("Index", "Evaluations");
         }
 
+        public IActionResult Responses()
+        {
+            // emp only see their data 
+            // dm see their data and their emps
+            // hr all
+            return View();
+        }
+
 
         public IActionResult Reply(int id, string employeeId)
         {

@@ -33,6 +33,11 @@ namespace EmployeesEvaluation.Services.Impl
             return _evaluationRepository.LoadAll(); 
         }
 
+        public IEnumerable<EvaluationResponse> GetEvaluationResponses()
+        {
+            return _evaluationResponseRepository.AllIncluding(er => er.Employee, e => e.Evaluation);
+        }
+
         public IEnumerable<Evaluation> AllIncluding(params Expression<Func<Evaluation, object>>[] includeProperties)
         {
             IEnumerable<Evaluation> _evaluations = _evaluationRepository

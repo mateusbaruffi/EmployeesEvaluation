@@ -55,5 +55,13 @@ namespace EmployeesEvaluation.WEB.Controllers.Api
 
             return Json(new { Data = evaluationDto });
         }
+
+        [HttpPost("ListResponses")]
+        public JsonResult ListResponses([DataSourceRequest]DataSourceRequest request)
+        {
+            var result = _evaluationService.GetEvaluationResponses().Select(Mapper.Map<EvaluationResponse, EvaluationResponseDto>);
+            var dsResult = result.ToDataSourceResult(request);
+            return Json(dsResult);
+        }
     }
 }

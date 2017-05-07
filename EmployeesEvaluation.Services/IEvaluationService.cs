@@ -11,6 +11,8 @@ namespace EmployeesEvaluation.Services
     {
         IEnumerable<Evaluation> LoadAll();
 
+        IEnumerable<EvaluationResponse> GetEvaluationResponses();
+
         void CreateWithExistingQuestions(Evaluation evaluation, List<int> questionIds);
 
         void UpdateWithExistingQuestions(Evaluation evaluation, List<int> questionIds);
