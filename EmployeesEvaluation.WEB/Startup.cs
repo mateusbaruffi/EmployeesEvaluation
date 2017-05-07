@@ -102,7 +102,7 @@ namespace EmployeesEvaluation.WEB
             Mapper.Initialize(config =>
             {
                 config.CreateMap<ApplicationUser, UserDto>();
-                //config.CreateMap<UserDto, ApplicationUser>();
+                config.CreateMap<UserDto, ApplicationUser>();
 
                 config.CreateMap<Department, DepartmentDto>();
                 config.CreateMap<DepartmentDto, Department>();

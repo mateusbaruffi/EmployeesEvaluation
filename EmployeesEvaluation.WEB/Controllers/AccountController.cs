@@ -52,6 +52,12 @@ namespace EmployeesEvaluation.WEB.Controllers
             _userRelationService = userRelationService;
         }
 
+        public IActionResult Index()
+        {
+
+            return View();
+        }
+
         //
         // GET: /Account/Login
         [HttpGet]
@@ -201,6 +207,7 @@ namespace EmployeesEvaluation.WEB.Controllers
                         _userRelationService.DeleteWhere(ur => ur.EmployeeId == user.Id);
 
                         // create the userRelation again
+                        if ((model.DepartmentManagerIds != null) && (model.DepartmentManagerIds.Count() > 0))
                         foreach (var dmId in model.DepartmentManagerIds)
                         {
                             _logger.LogInformation(">>>>>>>>>>>>>>>>>>>>>> creating new userrelation");

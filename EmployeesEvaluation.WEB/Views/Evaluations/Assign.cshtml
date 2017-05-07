@@ -4,10 +4,10 @@
     ViewData["Title"] = "Assign Evaluation";
 }
 
-<h2>@ViewData["Title"].</h2>
+<h2>@ViewData["Title"]</h2>
 
 <form asp-controller="Evaluations" asp-action="AssignSave" method="post" class="form-horizontal">
-    <h4>Assign evaluation.</h4>
+    
     <hr />
 
     <div asp-validation-summary="All" class="text-danger"></div>
@@ -15,10 +15,10 @@
 
     <div class="form-group">
         <label class="col-md-2 control-label">Evaluation</label>
-        <div class="demo-section k-content">
-            <h4>Evaluations</h4>
+        <div class="col-md-10">
+
             @(Html.Kendo().DropDownListFor(model => model.EvaluationId)
-            
+
               .DataTextField("Title")
               .DataValueField("Id")
               .DataSource(source =>
@@ -27,15 +27,14 @@
                   {
                       read.Action("All", "Evaluations");
                   });
-              }) .HtmlAttributes(new { style = "width: 100%" }).Deferred()
+              }).HtmlAttributes(new { style = "width: 50%" }).Deferred()
             )
         </div>
     </div>
 
     <div class="form-group">
         <label class="col-md-2 control-label">Department Manager</label>
-        <div class="demo-section k-content">
-            <h4>Department Manager</h4>
+        <div class="col-md-10">
             @(Html.Kendo().DropDownListFor(model => model.DepartmentManagerId)
 
               .DataTextField("Email")
@@ -46,20 +45,19 @@
                   {
                       read.Action("ListDepartmentManagers", "Users");
                   });
-              }) .HtmlAttributes(new { style = "width: 100%" }).Deferred()
+              }).HtmlAttributes(new { style = "width: 50%" }).Deferred()
             )
         </div>
-    </div>  
-    
+    </div>
+
     <div class="form-group">
-        <label class="col-md-2 control-label">Employees</label>
-        <div class="demo-section k-content">
-            <h4>Employees</h4>
+        <label class="col-md-2 control-label">Employee</label>
+        <div class="col-md-10">
             @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
 
                 .DataTextField("Email")
                 .DataValueField("Id")
-                .AutoBind(false)
+                .AutoBind(false).HtmlAttributes(new { style = "width: 50%" })
                         .Deferred()
             )
         </div>
@@ -71,6 +69,9 @@
         </div>
     </div>
 </form>
+
+
+
 
 
 @section scripts {

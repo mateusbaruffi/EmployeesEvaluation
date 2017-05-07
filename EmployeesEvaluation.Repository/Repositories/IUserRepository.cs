@@ -11,10 +11,13 @@ namespace EmployeesEvaluation.Repository.Repositories
 {
     public interface IUserRepository {
 
+        ApplicationUser GetSingle(string id);
         IEnumerable<ApplicationUser> GetAll();
         IEnumerable<ApplicationUser> AllIncluding(params Expression<Func<ApplicationUser, object>>[] includeProperties);
         IEnumerable<ApplicationUser> FindBy(Expression<Func<ApplicationUser, bool>> predicate);
         IEnumerable<ApplicationUser> FindByIncluding(Expression<Func<ApplicationUser, bool>> predicate, params Expression<Func<ApplicationUser, object>>[] includeProperties);
-
+        void Delete(ApplicationUser entity);
+        void Commit();
     }
+   
 }

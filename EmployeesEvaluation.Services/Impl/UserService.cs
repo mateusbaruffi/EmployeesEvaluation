@@ -56,5 +56,14 @@ namespace EmployeesEvaluation.Services.Impl
             return _userRepository.FindBy(u => u.UserType == UserType.DM && u.Id!=userId);
         }
 
+        public void Delete(string id)
+        {
+            ApplicationUser user = _userRepository.GetSingle(id);
+
+            _userRepository.Delete(user);
+            _userRepository.Commit();
+
+        }
+
     }
 }

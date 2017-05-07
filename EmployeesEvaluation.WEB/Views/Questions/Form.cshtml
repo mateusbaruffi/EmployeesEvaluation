@@ -66,21 +66,25 @@
 
     <div id="answers_container"></div>
 
-    @if (Model.QuestionType == QuestionTypeDto.LikertScale)
-    {
-        <button id="addAnswer" type="button" class="btn-primary">add answer</button>
-    }
-    else
-    {
-        <button id="addAnswer" type="button" class="btn-primary" style="display: none;">add answer</button>
-    }
-    
-
     <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <button type="submit" class="btn btn-default">Save</button>
+        <div class="col-md-3 col-md-offset-2">
+            @if (Model.QuestionType == QuestionTypeDto.LikertScale)
+            {
+                <button id="addAnswer" type="button" class="btn-default" title="Add New LikertAnswer"><i class="fa fa-plus" aria-hidden="true"></i></button>
+            }
+            else
+            {
+                <button id="addAnswer" type="button" class="btn-default" style="display: none;"><i class="fa fa-plus" aria-hidden="true"></i></button>
+            }
         </div>
+        
     </div>
+    <p>&nbsp;</p>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </div>
 </form>
 <script type="text/template" id="answerItem">
     <div class="form-group">

@@ -18,6 +18,7 @@ namespace EmployeesEvaluation.Services
         IEnumerable<ApplicationUser> AllIncluding(params Expression<Func<ApplicationUser, object>>[] includeProperties);
         IEnumerable<ApplicationUser> AllDepartmentManagers();
         IEnumerable<ApplicationUser> AllDepartmentManagersButMe(string userId);
+        void Delete(string id);
 
     }
 }

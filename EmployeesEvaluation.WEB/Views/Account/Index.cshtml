@@ -1,18 +1,17 @@
 
 
-<h2>Index Evaluations</h2>
+<h2>Users</h2>
 
 <div class="row">
     <div class="col-xs-18 col-md-12">
-        @(Html.Kendo().Grid<EmployeesEvaluation.WEB.Dtos.EvaluationDto>()
-                .Name("Evaluations")
+        @(Html.Kendo().Grid<EmployeesEvaluation.WEB.Dtos.UserDto>()
+                .Name("Users")
                 .Columns(columns =>
                 {
-                    columns.Bound(p => p.Title);
-                    columns.Bound(p => p.Id).Title(" ").Filterable(false).ClientTemplate("<a class='k-button k-button-icontext' href='/Evaluations/Edit/#: Id #'>EDIT</a>").Width(125);
+                    columns.Bound(p => p.Email);
+                    columns.Bound(p => p.Id).Title(" ").Filterable(false).ClientTemplate("<a class='k-button k-button-icontext' href='/Account/Edit/#: Id #'>EDIT</a>").Width(125);
                     columns.Command(command => { command.Destroy(); }).Width(125);
                 })
-
                 .Pageable()
                 .Sortable()
                 .Scrollable()
@@ -23,9 +22,8 @@
                     .Model(p => p.Id(m => m.Id))
                     .ServerOperation(false)
                     .PageSize(20)
-                    .Read(read => read.Action("List", "Evaluations"))
-
-                    .Destroy(delete => delete.Action("Delete", "Evaluations"))
+                    .Read(read => read.Action("List", "Users"))
+                    .Destroy(delete => delete.Action("Delete", "Users"))
                 ).Deferred()
         )
 

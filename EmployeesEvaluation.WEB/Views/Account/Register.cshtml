@@ -65,19 +65,19 @@
 <script>
     $(function () {
 
-        var userTypeDepartmentMangerVal = 2;
+        var userTypeEmployeeVal = 3;
         var editUserTypeVal = "@Convert.ChangeType(Model.UserType, Model.UserType.GetTypeCode())";
 
         // hide userType_group
-        hideDepartmentManagersGroup(editUserTypeVal, userTypeDepartmentMangerVal);
+        hideDepartmentManagersGroup(editUserTypeVal, userTypeEmployeeVal);
        
         $('#UserType').change(function () {
-            // if userType is DM show departmentManager multiSelect
-            hideDepartmentManagersGroup($(this).val(), userTypeDepartmentMangerVal);
+            // if userType is EMP show departmentManager multiSelect
+            hideDepartmentManagersGroup($(this).val(), userTypeEmployeeVal);
         });
 
-        function hideDepartmentManagersGroup(userType, userTypeDepartmentMangerId) {
-            if (userType == userTypeDepartmentMangerId)
+        function hideDepartmentManagersGroup(userType, userTypeEmployeeVal) {
+            if (userType == userTypeEmployeeVal)
                 $('#DepartmentManagerIds_group').show();
             else {
                 $('#DepartmentManagerIds option:selected').removeAttr("selected");

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using EmployeesEvaluation.Core.Models;
 using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace EmployeesEvaluation.Repository.Repositories.Impl
 {
@@ -15,6 +16,11 @@ namespace EmployeesEvaluation.Repository.Repositories.Impl
 
         public UserRepository(EmployeesEvaluationContext context) {
             this._context = context;
+        }
+
+        public virtual ApplicationUser GetSingle(string id)
+        {
+            return _context.Set<ApplicationUser>().FirstOrDefault(x => x.Id == id);
         }
 
         public virtual IEnumerable<ApplicationUser> GetAll()
@@ -48,6 +54,17 @@ namespace EmployeesEvaluation.Repository.Repositories.Impl
             query.Include(u => u.EmployeesRelated).Where(predicate);
 
             return query.Where(predicate);
+        }
+
+        public virtual void Delete(ApplicationUser entity)
+        {
+            EntityEntry dbEntityEntry = _context.Entry<ApplicationUser>(entity);
+            dbEntityEntry.State = EntityState.Deleted;
+        }
+
+        public virtual void Commit()
+        {
+            _context.SaveChanges();
         }
     }
 }
