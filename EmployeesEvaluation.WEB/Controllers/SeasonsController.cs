@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using EmployeesEvaluation.Core.Models;
 using EmployeesEvaluation.Services;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EmployeesEvaluation.WEB.Controllers
 {
+    [Authorize(Roles = "HRM")]
     public class SeasonsController : Controller
     {
 

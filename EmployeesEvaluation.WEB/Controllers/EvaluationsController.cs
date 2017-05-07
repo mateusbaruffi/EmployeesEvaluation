@@ -14,9 +14,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EmployeesEvaluation.WEB.Controllers
 {
+    [Authorize]
     public class EvaluationsController : Controller
     {
         private readonly ILogger _logger;

@@ -9,9 +9,11 @@ using AutoMapper;
 using EmployeesEvaluation.Core.Models;
 using EmployeesEvaluation.Services;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EmployeesEvaluation.WEB.Controllers
 {
+    [Authorize(Roles = "HRM, DM")]
     public class QuestionsController : Controller
     {
         private readonly ILogger _logger;

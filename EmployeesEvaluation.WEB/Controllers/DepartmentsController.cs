@@ -6,9 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 using EmployeesEvaluation.Core.Models;
 using EmployeesEvaluation.Services;
 using Microsoft.Extensions.Logging;
+using DocumentFormat.OpenXml.Vml.Office;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EmployeesEvaluation.WEB.Controllers
 {
+    [Authorize(Roles = "HRM")]
     public class DepartmentsController : Controller
     {
         private readonly IDepartmentService _departmentService;

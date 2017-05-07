@@ -1,4 +1,6 @@
-﻿using System;
+﻿using EmployeesEvaluation.Core.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -8,6 +10,9 @@ namespace EmployeesEvaluation.WEB.Models.AccountViewModels
 {
     public class RegisterViewModel
     {
+
+        public string Id { get; set; }
+
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]
@@ -23,5 +28,20 @@ namespace EmployeesEvaluation.WEB.Models.AccountViewModels
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+
+        public List<SelectListItem> ApplicationRoles { get; set; }
+
+        [Display(Name = "Role")]
+        public string ApplicationRoleId { get; set; }
+
+        //public IEnumerable<string> DepartmentManagerIds { get; set; }
+        [Display(Name = "Department Manager")]
+        public string[] DepartmentManagerIds { get; set; }
+
+        public List<SelectListItem> ApplicationUsers { get; set; }
+
+        public UserType UserType { get; set; }
+
+
     }
 }

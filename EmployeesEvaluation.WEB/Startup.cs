@@ -19,6 +19,8 @@ using EmployeesEvaluation.Services.Impl;
 using EmployeesEvaluation.WEB.Dtos;
 using Newtonsoft.Json.Serialization;
 using AutoMapper;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EmployeesEvaluation.WEB
 {
@@ -168,7 +170,7 @@ namespace EmployeesEvaluation.WEB
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=Account}/{action=Login}/{id?}");
             });
 
             // Configure Kendo UI

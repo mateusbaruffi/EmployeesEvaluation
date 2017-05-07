@@ -12,6 +12,8 @@ using Microsoft.Extensions.Options;
 using EmployeesEvaluation.Core.Models;
 using EmployeesEvaluation.WEB.Models.AccountViewModels;
 using EmployeesEvaluation.WEB.Services;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using EmployeesEvaluation.Services;
 
 namespace EmployeesEvaluation.WEB.Controllers
 {
@@ -19,26 +21,35 @@ namespace EmployeesEvaluation.WEB.Controllers
     public class AccountController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly ISmsSender _smsSender;
         private readonly ILogger _logger;
         private readonly string _externalCookieScheme;
+        private readonly IUserService _userService;
+        private readonly IUserRelationService _userRelationService;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager,
             SignInManager<ApplicationUser> signInManager,
             IOptions<IdentityCookieOptions> identityCookieOptions,
             IEmailSender emailSender,
             ISmsSender smsSender,
-            ILoggerFactory loggerFactory)
+            ILoggerFactory loggerFactory,
+            IUserService userService,
+            IUserRelationService userRelationService)
         {
             _userManager = userManager;
+            _roleManager = roleManager;
             _signInManager = signInManager;
             _externalCookieScheme = identityCookieOptions.Value.ExternalCookieAuthenticationScheme;
             _emailSender = emailSender;
             _smsSender = smsSender;
             _logger = loggerFactory.CreateLogger<AccountController>();
+            _userService = userService;
+            _userRelationService = userRelationService;
         }
 
         //
@@ -98,8 +109,149 @@ namespace EmployeesEvaluation.WEB.Controllers
         [AllowAnonymous]
         public IActionResult Register(string returnUrl = null)
         {
+
+
+            RegisterViewModel model = new RegisterViewModel();
+
+
+           // model.DepartmentManagerIds.
+
+            model.ApplicationRoles = _roleManager.Roles.Select(r => new SelectListItem {
+                Text = r.Name,
+                Value = r.Id
+            }).ToList();
+
+            model.ApplicationUsers = _userService.All().Select(u => new SelectListItem {
+                Text = u.Email,
+                Value = u.Id
+            }).ToList();
+
+            //model.DepartmentManagerIds = new string[] { "424b1457-d65d-42cf-8134-79b5da681618", "e6c7b83b-1dbf-4a9b-b15e-f673100069a8" };
+
             ViewData["ReturnUrl"] = returnUrl;
-            return View();
+            ViewData["Action"] = "Register";
+            return View(model);
+        }
+
+        public async Task<IActionResult> Edit(string id)
+        {
+            RegisterViewModel model = new RegisterViewModel();
+
+            model.ApplicationRoles = _roleManager.Roles.Select(r => new SelectListItem
+            {
+                Text = r.Name,
+                Value = r.Id
+            }).ToList();
+
+            model.ApplicationUsers = _userService.All().Select(u => new SelectListItem
+            {
+                Text = u.Email,
+                Value = u.Id
+            }).ToList();
+
+            //model.DepartmentManagerIds = new string[] { "424b1457-d65d-42cf-8134-79b5da681618", "e6c7b83b-1dbf-4a9b-b15e-f673100069a8" };
+
+            if (!String.IsNullOrEmpty(id))
+            {
+                ApplicationUser user = await _userManager.FindByIdAsync(id);
+
+                var userRelations = _userRelationService.FindBy(ur => ur.EmployeeId == id);
+
+                var dmIds = new string[userRelations.Count()];
+
+                var i = 0;
+                foreach (var userRelation in userRelations)
+                {
+                    dmIds[i] = userRelation.DepartmentManagerId;
+                    i++;
+                }
+
+                //_logger.LogInformation("----------------------------- enum name:? " + user.UserType.ToString() );
+
+                if (user != null)
+                {
+                    model.Email = user.Email;
+                    model.UserType = user.UserType;
+                    model.DepartmentManagerIds = dmIds;
+                    model.ApplicationRoleId = _roleManager.Roles.Single(r => r.Name == _userManager.GetRolesAsync(user).Result.Single()).Id;
+                }
+            }
+
+            ViewData["Action"] = "Update";
+            return View("Register", model);
+        }
+
+        //
+        // POST: /Account/Register
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Update(RegisterViewModel model, string returnUrl = null)
+        {
+            if (ModelState.IsValid)
+            {
+                ApplicationUser user = await _userManager.FindByIdAsync(model.Id);
+
+                if (user != null)
+                {
+                    user.Email = model.Email;
+                    user.UserType = model.UserType;
+
+                    string currentRoleName = _userManager.GetRolesAsync(user).Result.Single();
+                    string currentRoleId = _roleManager.Roles.Single(r => r.Name == currentRoleName).Id;
+
+                    IdentityResult result = await _userManager.UpdateAsync(user);
+
+                    if (result.Succeeded)
+                    {
+
+                        // remove all UserRelation PS: verify if user is employ
+                        _userRelationService.DeleteWhere(ur => ur.EmployeeId == user.Id);
+
+                        // create the userRelation again
+                        foreach (var dmId in model.DepartmentManagerIds)
+                        {
+                            _logger.LogInformation(">>>>>>>>>>>>>>>>>>>>>> creating new userrelation");
+                            UserRelation ur = new UserRelation()
+                            {
+                                DepartmentManagerId = dmId,
+                                EmployeeId = user.Id
+                            };
+
+                            _userRelationService.Create(ur);
+                        }
+
+
+                        if (!currentRoleName.Equals(model.UserType.ToString()))
+                        {
+
+                        //}
+
+                        //if (currentRoleId != model.ApplicationRoleId)
+                        //{
+                            IdentityResult roleResult = await _userManager.RemoveFromRoleAsync(user, currentRoleName);
+                            if (roleResult.Succeeded)
+                            {
+                                //IdentityRole role = await _roleManager.FindByIdAsync(model.ApplicationRoleId);
+                                //if (role != null)
+                                //{
+                                    IdentityResult newRoleResult = await _userManager.AddToRoleAsync(user, model.UserType.ToString());
+                                    if (newRoleResult.Succeeded)
+                                    {
+                                        _logger.LogInformation(">>>>>>>>>>>>>>>>> User updated");
+                                        return RedirectToLocal(returnUrl);
+                                    }
+                                //}
+                            }
+                        }
+                        else
+                            return RedirectToLocal(returnUrl);
+                    }
+                }
+
+            }
+            _logger.LogInformation("------------------------- something went wrong");
+            return View("Register", model);
         }
 
         //
@@ -112,19 +264,41 @@ namespace EmployeesEvaluation.WEB.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, UserType = model.UserType };
+
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=532713
-                    // Send an email with this link
-                    //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    //var callbackUrl = Url.Action(nameof(ConfirmEmail), "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
-                    //await _emailSender.SendEmailAsync(model.Email, "Confirm your account",
-                    //    $"Please confirm your account by clicking this link: <a href='{callbackUrl}'>link</a>");
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    _logger.LogInformation(3, "User created a new account with password.");
-                    return RedirectToLocal(returnUrl);
+
+                    foreach (var dmId in model.DepartmentManagerIds)
+                    {
+
+                        UserRelation ur = new UserRelation()
+                        {
+                            DepartmentManagerId = dmId,
+                            EmployeeId = user.Id
+                        };
+
+                        _userRelationService.Create(ur);
+                    }
+
+
+                    //IdentityRole role = await _roleManager.FindByIdAsync(model.ApplicationRoleId);
+                    //if (role != null)
+                    //{
+                    //IdentityResult roleResult = await _userManager.AddToRoleAsync(user, role.Name);
+
+                    IdentityResult roleResult = await _userManager.AddToRoleAsync(user, user.UserType.ToString());
+
+                    if (roleResult.Succeeded)
+                        {
+                            await _signInManager.SignInAsync(user, isPersistent: false);
+                            _logger.LogInformation(3, "User created a new account with password.");
+                            return RedirectToLocal(returnUrl);
+                        }
+                    //}
+                    
+                    
                 }
                 AddErrors(result);
             }
@@ -141,7 +315,7 @@ namespace EmployeesEvaluation.WEB.Controllers
         {
             await _signInManager.SignOutAsync();
             _logger.LogInformation(4, "User logged out.");
-            return RedirectToAction(nameof(HomeController.Index), "Home");
+            return RedirectToAction(nameof(AccountController.Login), "Account");
         }
 
         //
@@ -469,7 +643,7 @@ namespace EmployeesEvaluation.WEB.Controllers
             }
             else
             {
-                return RedirectToAction(nameof(HomeController.Index), "Home");
+                return RedirectToAction(nameof(EvaluationsController.Index), "Evaluations");
             }
         }
 
