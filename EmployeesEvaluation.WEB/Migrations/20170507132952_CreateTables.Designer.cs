@@ -9,8 +9,8 @@ using EmployeesEvaluation.Core.Models;
 namespace EmployeesEvaluation.WEB.Migrations
 {
     [DbContext(typeof(EmployeesEvaluationContext))]
-    [Migration("20170502121636_AddOwnershipToQuestion")]
-    partial class AddOwnershipToQuestion
+    [Migration("20170507132952_CreateTables")]
+    partial class CreateTables
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -79,13 +79,13 @@ namespace EmployeesEvaluation.WEB.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(new DateTime(2017, 5, 2, 9, 16, 36, 376, DateTimeKind.Local));
+                        .HasDefaultValue(new DateTime(2017, 5, 7, 10, 29, 52, 162, DateTimeKind.Local));
 
                     b.Property<string>("Name");
 
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(new DateTime(2017, 5, 2, 9, 16, 36, 376, DateTimeKind.Local));
+                        .HasDefaultValue(new DateTime(2017, 5, 7, 10, 29, 52, 164, DateTimeKind.Local));
 
                     b.HasKey("Id");
 
@@ -97,13 +97,41 @@ namespace EmployeesEvaluation.WEB.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<string>("DepartmentManagerId");
+
                     b.Property<string>("Disclosure");
 
                     b.Property<string>("Introduction");
 
+                    b.Property<int>("SeasonId");
+
+                    b.Property<string>("Title");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("DepartmentManagerId");
+
+                    b.HasIndex("SeasonId");
+
                     b.ToTable("Evaluations");
+                });
+
+            modelBuilder.Entity("EmployeesEvaluation.Core.Models.EvaluationAssigned", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("EmployeeId");
+
+                    b.Property<int>("EvaluationId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("EvaluationId");
+
+                    b.ToTable("EvaluationAssigned");
                 });
 
             modelBuilder.Entity("EmployeesEvaluation.Core.Models.EvaluationQuestion", b =>
@@ -124,6 +152,40 @@ namespace EmployeesEvaluation.WEB.Migrations
                     b.ToTable("EvaluationQuestion");
                 });
 
+            modelBuilder.Entity("EmployeesEvaluation.Core.Models.EvaluationResponse", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("EmployeeId");
+
+                    b.Property<int>("EvaluationId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("EvaluationId");
+
+                    b.ToTable("EvaluationResponses");
+                });
+
+            modelBuilder.Entity("EmployeesEvaluation.Core.Models.LikertAnswer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Description");
+
+                    b.Property<int>("QuestionId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionId");
+
+                    b.ToTable("LikertAnswer");
+                });
+
             modelBuilder.Entity("EmployeesEvaluation.Core.Models.Question", b =>
                 {
                     b.Property<int>("Id")
@@ -131,7 +193,7 @@ namespace EmployeesEvaluation.WEB.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(new DateTime(2017, 5, 2, 9, 16, 36, 376, DateTimeKind.Local));
+                        .HasDefaultValue(new DateTime(2017, 5, 7, 10, 29, 52, 170, DateTimeKind.Local));
 
                     b.Property<string>("Description");
 
@@ -143,13 +205,39 @@ namespace EmployeesEvaluation.WEB.Migrations
 
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(new DateTime(2017, 5, 2, 9, 16, 36, 376, DateTimeKind.Local));
+                        .HasDefaultValue(new DateTime(2017, 5, 7, 10, 29, 52, 170, DateTimeKind.Local));
 
                     b.HasKey("Id");
 
                     b.HasIndex("OwnershipId");
 
                     b.ToTable("Questions");
+                });
+
+            modelBuilder.Entity("EmployeesEvaluation.Core.Models.QuestionAnswer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int?>("EvaluationResponseId");
+
+                    b.Property<string>("FileName");
+
+                    b.Property<int>("LikertAnswerId");
+
+                    b.Property<string>("OpenEndedAnswer");
+
+                    b.Property<int>("QuestionId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EvaluationResponseId");
+
+                    b.HasIndex("LikertAnswerId");
+
+                    b.HasIndex("QuestionId");
+
+                    b.ToTable("QuestionAnswer");
                 });
 
             modelBuilder.Entity("EmployeesEvaluation.Core.Models.Season", b =>
@@ -284,15 +372,58 @@ namespace EmployeesEvaluation.WEB.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("EmployeesEvaluation.Core.Models.Evaluation", b =>
+                {
+                    b.HasOne("EmployeesEvaluation.Core.Models.ApplicationUser", "DepartmentManager")
+                        .WithMany()
+                        .HasForeignKey("DepartmentManagerId");
+
+                    b.HasOne("EmployeesEvaluation.Core.Models.Season", "Season")
+                        .WithMany("Evaluations")
+                        .HasForeignKey("SeasonId");
+                });
+
+            modelBuilder.Entity("EmployeesEvaluation.Core.Models.EvaluationAssigned", b =>
+                {
+                    b.HasOne("EmployeesEvaluation.Core.Models.ApplicationUser", "Employee")
+                        .WithMany("EvaluationsAssigned")
+                        .HasForeignKey("EmployeeId");
+
+                    b.HasOne("EmployeesEvaluation.Core.Models.Evaluation", "Evaluation")
+                        .WithMany("EvaluationsAssigned")
+                        .HasForeignKey("EvaluationId");
+                });
+
             modelBuilder.Entity("EmployeesEvaluation.Core.Models.EvaluationQuestion", b =>
                 {
                     b.HasOne("EmployeesEvaluation.Core.Models.Evaluation", "Evaluation")
                         .WithMany("EvaluationQuestions")
-                        .HasForeignKey("EvaluationId");
+                        .HasForeignKey("EvaluationId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("EmployeesEvaluation.Core.Models.Question", "Question")
                         .WithMany("EvaluationQuestions")
                         .HasForeignKey("QuestionId");
+                });
+
+            modelBuilder.Entity("EmployeesEvaluation.Core.Models.EvaluationResponse", b =>
+                {
+                    b.HasOne("EmployeesEvaluation.Core.Models.ApplicationUser", "Employee")
+                        .WithMany("EvaluationResponses")
+                        .HasForeignKey("EmployeeId");
+
+                    b.HasOne("EmployeesEvaluation.Core.Models.Evaluation", "Evaluation")
+                        .WithMany("EvaluationResponses")
+                        .HasForeignKey("EvaluationId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("EmployeesEvaluation.Core.Models.LikertAnswer", b =>
+                {
+                    b.HasOne("EmployeesEvaluation.Core.Models.Question", "Question")
+                        .WithMany("LikertAnswers")
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("EmployeesEvaluation.Core.Models.Question", b =>
@@ -300,6 +431,14 @@ namespace EmployeesEvaluation.WEB.Migrations
                     b.HasOne("EmployeesEvaluation.Core.Models.ApplicationUser", "Ownership")
                         .WithMany()
                         .HasForeignKey("OwnershipId");
+                });
+
+            modelBuilder.Entity("EmployeesEvaluation.Core.Models.QuestionAnswer", b =>
+                {
+                    b.HasOne("EmployeesEvaluation.Core.Models.EvaluationResponse", "EvaluationResponse")
+                        .WithMany("QuestionAnswers")
+                        .HasForeignKey("EvaluationResponseId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("EmployeesEvaluation.Core.Models.UserRelation", b =>
