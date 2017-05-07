@@ -60,23 +60,47 @@
                     <a asp-area="" asp-controller="Home" asp-action="Index"><i class="fa fa-dashboard fa-fw"></i> Home</a>
                 </li>
 
+                @if (User.IsInRole("HRM"))
+                {
                 <li>
                     <a asp-area="" asp-controller="Departments" asp-action="Index"><i class="fa fa-table fa-fw"></i> Departments</a>
-                </li>                
-                <li>
-                    <a asp-area="" asp-controller="Evaluations" asp-action="Index"><i class="fa fa-edit fa-fw"></i> Evaluations</a>
-                </li>
-                <li>
-                    <a asp-area="" asp-controller="Questions" asp-action="Index"><i class="fa fa-edit fa-fw"></i> Questions</a>
                 </li>
                 <li>
                     <a asp-area="" asp-controller="Seasons" asp-action="Index"><i class="fa fa-edit fa-fw"></i> Seasons</a>
                 </li>
+                }
+
+                <li>
+                    <a asp-area="" asp-controller="Evaluations" asp-action="Index"><i class="fa fa-edit fa-fw"></i> Evaluations<span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        @if (User.IsInRole("HRM") || User.IsInRole("DM"))
+                        {
+                        <li>
+                            <a asp-area="" asp-controller="Evaluations" asp-action="Index">List Evaluations</a>
+                        </li>
+                        <li>
+                            <a asp-area="" asp-controller="Evaluations" asp-action="New">New Evaluation</a>
+                        </li>
+                        <li>
+                            <a asp-area="" asp-controller="Evaluations" asp-action="Assign">Assign Evaluation</a>
+                        </li>
+                        }
+                        <li>
+                            <a asp-area="" asp-controller="Evaluations" asp-action="Responses">Responses</a>
+                        </li>                        
+                    </ul>
+                    <!-- /.nav-second-level -->
+                </li>
+                @if (User.IsInRole("HRM") || User.IsInRole("DM"))
+                {
+                <li>
+                    <a asp-area="" asp-controller="Questions" asp-action="Index"><i class="fa fa-edit fa-fw"></i> Questions</a>
+                </li>
+
                 <li>
                     <a href="forms.html"><i class="fa fa-edit fa-fw"></i> Users</a>
                 </li>
-         
-
+                }
             </ul>
         </div>
         <!-- /.sidebar-collapse -->

@@ -10,7 +10,7 @@
     <hr />
     <input asp-for="Id" type="hidden" />
     <div asp-validation-summary="All" class="text-danger"></div>
-    <div class="form-group">
+    <div class="form-group" id="UserType_group">
         <label asp-for="UserType" class="col-md-2 control-label"></label>
         <div class="col-md-10">
             <select asp-for="UserType" asp-items="Html.GetEnumSelectList<UserType>()" class="form-control">
@@ -18,15 +18,7 @@
             </select>
         </div>
     </div>    
-    <div class="form-group">
-        <label asp-for="ApplicationRoleId" class="col-md-2 control-label"></label>
-        <div class="col-md-10">
-            <select asp-for="ApplicationRoleId" asp-items="@Model.ApplicationRoles" class="form-control">
-                <option>Select a user type</option>
-            </select>
-        </div>
-    </div>
-    <div class="form-group">
+    <div class="form-group" id="DepartmentManagerIds_group">
         <label asp-for="DepartmentManagerIds" class="col-md-2 control-label"></label>
         <div class="col-md-10">
             <select asp-for="DepartmentManagerIds" asp-items="@Model.ApplicationUsers" class="form-control">
@@ -62,6 +54,43 @@
     </div>
 </form>
 
+
+
 @section Scripts {
+
+
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
+
+<script>
+    $(function () {
+
+        var userTypeDepartmentMangerVal = 2;
+        var editUserTypeVal = "@Convert.ChangeType(Model.UserType, Model.UserType.GetTypeCode())";
+
+        // hide userType_group
+        hideDepartmentManagersGroup(editUserTypeVal, userTypeDepartmentMangerVal);
+       
+        $('#UserType').change(function () {
+            // if userType is DM show departmentManager multiSelect
+            hideDepartmentManagersGroup($(this).val(), userTypeDepartmentMangerVal);
+        });
+
+        function hideDepartmentManagersGroup(userType, userTypeDepartmentMangerId) {
+            if (userType == userTypeDepartmentMangerId)
+                $('#DepartmentManagerIds_group').show();
+            else {
+                $('#DepartmentManagerIds option:selected').removeAttr("selected");
+                $('#DepartmentManagerIds_group').hide();
+            }
+        }
+
+
+    });
+</script>
+
+
+
+
+
 }

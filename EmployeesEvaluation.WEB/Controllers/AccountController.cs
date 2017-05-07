@@ -110,29 +110,25 @@ namespace EmployeesEvaluation.WEB.Controllers
         public IActionResult Register(string returnUrl = null)
         {
 
-
             RegisterViewModel model = new RegisterViewModel();
-
-
-           // model.DepartmentManagerIds.
 
             model.ApplicationRoles = _roleManager.Roles.Select(r => new SelectListItem {
                 Text = r.Name,
                 Value = r.Id
             }).ToList();
 
-            model.ApplicationUsers = _userService.All().Select(u => new SelectListItem {
+            model.ApplicationUsers = _userService.AllDepartmentManagers().Select(u => new SelectListItem {
                 Text = u.Email,
                 Value = u.Id
             }).ToList();
 
-            //model.DepartmentManagerIds = new string[] { "424b1457-d65d-42cf-8134-79b5da681618", "e6c7b83b-1dbf-4a9b-b15e-f673100069a8" };
-
+   
             ViewData["ReturnUrl"] = returnUrl;
             ViewData["Action"] = "Register";
             return View(model);
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> Edit(string id)
         {
             RegisterViewModel model = new RegisterViewModel();
@@ -143,13 +139,11 @@ namespace EmployeesEvaluation.WEB.Controllers
                 Value = r.Id
             }).ToList();
 
-            model.ApplicationUsers = _userService.All().Select(u => new SelectListItem
+            model.ApplicationUsers = _userService.AllDepartmentManagersButMe(id).Select(u => new SelectListItem
             {
                 Text = u.Email,
                 Value = u.Id
             }).ToList();
-
-            //model.DepartmentManagerIds = new string[] { "424b1457-d65d-42cf-8134-79b5da681618", "e6c7b83b-1dbf-4a9b-b15e-f673100069a8" };
 
             if (!String.IsNullOrEmpty(id))
             {
@@ -165,8 +159,6 @@ namespace EmployeesEvaluation.WEB.Controllers
                     dmIds[i] = userRelation.DepartmentManagerId;
                     i++;
                 }
-
-                //_logger.LogInformation("----------------------------- enum name:? " + user.UserType.ToString() );
 
                 if (user != null)
                 {
@@ -221,27 +213,18 @@ namespace EmployeesEvaluation.WEB.Controllers
                             _userRelationService.Create(ur);
                         }
 
-
                         if (!currentRoleName.Equals(model.UserType.ToString()))
                         {
 
-                        //}
-
-                        //if (currentRoleId != model.ApplicationRoleId)
-                        //{
                             IdentityResult roleResult = await _userManager.RemoveFromRoleAsync(user, currentRoleName);
                             if (roleResult.Succeeded)
                             {
-                                //IdentityRole role = await _roleManager.FindByIdAsync(model.ApplicationRoleId);
-                                //if (role != null)
-                                //{
-                                    IdentityResult newRoleResult = await _userManager.AddToRoleAsync(user, model.UserType.ToString());
-                                    if (newRoleResult.Succeeded)
-                                    {
-                                        _logger.LogInformation(">>>>>>>>>>>>>>>>> User updated");
-                                        return RedirectToLocal(returnUrl);
-                                    }
-                                //}
+                                IdentityResult newRoleResult = await _userManager.AddToRoleAsync(user, model.UserType.ToString());
+                                if (newRoleResult.Succeeded)
+                                {
+                                    _logger.LogInformation(">>>>>>>>>>>>>>>>> User updated");
+                                    return RedirectToLocal(returnUrl);
+                                }
                             }
                         }
                         else
@@ -270,34 +253,18 @@ namespace EmployeesEvaluation.WEB.Controllers
                 if (result.Succeeded)
                 {
 
-                    foreach (var dmId in model.DepartmentManagerIds)
-                    {
+                    // assign department manager to employee
+                    _userRelationService.AssignDepartmentManagerToEmployee(user.Id, model.DepartmentManagerIds);
 
-                        UserRelation ur = new UserRelation()
-                        {
-                            DepartmentManagerId = dmId,
-                            EmployeeId = user.Id
-                        };
-
-                        _userRelationService.Create(ur);
-                    }
-
-
-                    //IdentityRole role = await _roleManager.FindByIdAsync(model.ApplicationRoleId);
-                    //if (role != null)
-                    //{
-                    //IdentityResult roleResult = await _userManager.AddToRoleAsync(user, role.Name);
-
+                    // Add role to user through the user type
                     IdentityResult roleResult = await _userManager.AddToRoleAsync(user, user.UserType.ToString());
 
                     if (roleResult.Succeeded)
-                        {
-                            await _signInManager.SignInAsync(user, isPersistent: false);
-                            _logger.LogInformation(3, "User created a new account with password.");
-                            return RedirectToLocal(returnUrl);
-                        }
-                    //}
-                    
+                    {
+                        //await _signInManager.SignInAsync(user, isPersistent: false);
+                        _logger.LogInformation(3, "User created a new account with password.");
+                        return RedirectToLocal(returnUrl);
+                    }
                     
                 }
                 AddErrors(result);

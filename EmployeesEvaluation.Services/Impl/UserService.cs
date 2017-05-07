@@ -46,5 +46,15 @@ namespace EmployeesEvaluation.Services.Impl
             return _userRepository.FindByIncluding(predicate, includeProperties);
         }
 
+        public IEnumerable<ApplicationUser> AllDepartmentManagers()
+        {
+            return _userRepository.FindBy(u => u.UserType == UserType.DM);
+        }
+
+        public IEnumerable<ApplicationUser> AllDepartmentManagersButMe(string userId)
+        {
+            return _userRepository.FindBy(u => u.UserType == UserType.DM && u.Id!=userId);
+        }
+
     }
 }

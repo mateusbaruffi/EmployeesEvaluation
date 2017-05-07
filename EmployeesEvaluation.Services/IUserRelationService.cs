@@ -15,6 +15,7 @@ namespace EmployeesEvaluation.Services
         IEnumerable<UserRelation> FindByIncluding(Expression<Func<UserRelation, bool>> predicate, params Expression<Func<UserRelation, object>>[] includeProperties);
         void DeleteWhere(Expression<Func<UserRelation, bool>> predicate);
         void Create(UserRelation ur);
+        void AssignDepartmentManagerToEmployee(string employeeId, string[] departmentManagerIds);
         IEnumerable<ApplicationUser> GetEmployeesByDepartmentManagerId(string departmentManagerId);
 
     }

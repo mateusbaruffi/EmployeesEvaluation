@@ -56,5 +56,26 @@ namespace EmployeesEvaluation.Services.Impl
             _userRelationRepository.Commit();
         }
 
+        public void AssignDepartmentManagerToEmployee(string employeeId, string[] departmentManagerIds)
+        {
+            if ((departmentManagerIds != null) && (departmentManagerIds.Count() > 0))
+            {
+                foreach (var dmId in departmentManagerIds)
+                {
+
+                    UserRelation ur = new UserRelation()
+                    {
+                        DepartmentManagerId = dmId,
+                        EmployeeId = employeeId
+                    };
+
+                    _userRelationRepository.Add(ur);
+                }
+
+                _userRelationRepository.Commit();
+            }
+            
+        }
+
     }
 }
