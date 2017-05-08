@@ -18,7 +18,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace EmployeesEvaluation.WEB.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "HRM, DM, EMP")]
     public class EvaluationsController : Controller
     {
         private readonly ILogger _logger;
@@ -38,12 +38,13 @@ namespace EmployeesEvaluation.WEB.Controllers
             this._environment = hostingEnviroment;
         }
 
-
+        [Authorize(Roles = "HRM, DM")]
         public IActionResult Index()
         {
             return View();
         }
 
+        [Authorize(Roles = "HRM, DM")]
         public IActionResult New()
         {
             EvaluationDto evaluationDto = new EvaluationDto();
@@ -65,6 +66,7 @@ namespace EmployeesEvaluation.WEB.Controllers
             return View("Form", evaluationDto);
         }
 
+        [Authorize(Roles = "HRM, DM")]
         public IActionResult Edit(int id)
         {
             var evaluation = _evaluationService.GetSingleIncludingAll(e => e.Id == id);
@@ -88,6 +90,7 @@ namespace EmployeesEvaluation.WEB.Controllers
             return View("Form", evaluationDto);
         }
 
+        [Authorize(Roles = "HRM, DM")]
         public IActionResult Save(EvaluationDto evaluationDto)
         {
             var evaluation = Mapper.Map<EvaluationDto, Evaluation>(evaluationDto);
@@ -106,11 +109,13 @@ namespace EmployeesEvaluation.WEB.Controllers
             return RedirectToAction("Index", "Evaluations");
         }
 
+        [Authorize(Roles = "HRM, DM")]
         public IActionResult Assign()
         {
             return View();
         }
 
+        [Authorize(Roles = "HRM, DM")]
         public async Task<IActionResult> AssignSave(EvaluationAssignedDto evaluationAssignedDto)
         {
             var evaluationAssigned = Mapper.Map<EvaluationAssignedDto, EvaluationAssigned>(evaluationAssignedDto);
@@ -118,7 +123,7 @@ namespace EmployeesEvaluation.WEB.Controllers
             try
             {
                 _evaluationService.AssignEvaluationEmployee(evaluationAssigned);
-                await SendEmail(evaluationAssignedDto);
+                await SendEmployeeEmail(evaluationAssignedDto);
             }
             catch (Exception e)
             {
@@ -126,27 +131,39 @@ namespace EmployeesEvaluation.WEB.Controllers
             }
             
 
-            return RedirectToAction("Index", "Evaluations");
+            return RedirectToAction("Success", "Evaluations");
         }
 
+
+        [Authorize(Roles = "HRM, DM, EMP")]
         public IActionResult Responses()
         {
-            // emp only see their data 
-            // dm see their data and their emps
-            // hr all
             return View();
         }
 
 
-        public IActionResult Reply(int id, string employeeId)
+        [Authorize(Roles = "HRM, DM, EMP")]
+        public IActionResult ShowResponse(int id)
+        {
+            EvaluationResponse evaluationResponse = _evaluationService.GetSingleResponseIncludingAll(id);
+
+            var evaluationResponseDto = Mapper.Map<EvaluationResponse, EvaluationResponseDto>(evaluationResponse);
+
+            return View(evaluationResponseDto);
+        }
+
+
+        [Authorize(Roles = "HRM, DM, EMP")]
+        public IActionResult Reply(int id, string employeeId, string departmentManagerId)
         {
             var evaluation = _evaluationService.GetEvaluationAssigned(id, employeeId);
             var evaluationDto = Mapper.Map<Evaluation, EvaluationDto>(evaluation);
 
-            var evaluationReplyDto = new EvaluationResponseDto();
-            evaluationReplyDto.EvaluationDto = evaluationDto;
-            evaluationReplyDto.EvaluationId = id;
-            evaluationReplyDto.EmployeeId = employeeId;
+            var evaluationResopnseDto = new EvaluationResponseDto();
+            evaluationResopnseDto.Evaluation = evaluationDto;
+            evaluationResopnseDto.EvaluationId = id;
+            evaluationResopnseDto.EmployeeId = employeeId;
+            evaluationResopnseDto.DepartmentManagerId = departmentManagerId;
 
             if (evaluation == null)
                 _logger.LogInformation("--------------- This Employee Has No Evaluation To Answer ");
@@ -155,9 +172,10 @@ namespace EmployeesEvaluation.WEB.Controllers
                 // verify if this evaluation has already been answered
             }
 
-            return View(evaluationReplyDto);
+            return View(evaluationResopnseDto);
         }
 
+        [Authorize(Roles = "HRM, DM, EMP")]
         public async Task<IActionResult> SaveReply(EvaluationResponseDto evaluationResponseDto, IFormFile File)
         {
             _logger.LogInformation("---------------- " + evaluationResponseDto );
@@ -167,7 +185,14 @@ namespace EmployeesEvaluation.WEB.Controllers
             var evaluationResponse = Mapper.Map<EvaluationResponseDto, EvaluationResponse>(evaluationResponseDto);
             _evaluationService.CreateEvaluationResponse(evaluationResponse);
 
-            return RedirectToAction("Index", "Evaluations");
+            await SendDepartmentManagerEmail(evaluationResponseDto);
+
+            return RedirectToAction("Success", "Evaluations");
+        }
+
+        public IActionResult Success()
+        {
+            return View();
         }
 
         private async Task UploadAnswersFile(ICollection<QuestionAnswerDto> questionAnswers)
@@ -188,17 +213,30 @@ namespace EmployeesEvaluation.WEB.Controllers
             }
         }
 
-        private async Task SendEmail(EvaluationAssignedDto evaluationAssignedDto)
+        private async Task SendEmployeeEmail(EvaluationAssignedDto evaluationAssignedDto)
         {
             // get the employee's email
             var employee = _userService.FindBy(u => u.Id == evaluationAssignedDto.EmployeeId).FirstOrDefault();
             var evaluationId = evaluationAssignedDto.EvaluationId;
 
-            var link = $"http://localhost:63585/Evaluations/Reply/{evaluationId}?employeeId={employee.Id}";
+            var link = $"http://localhost:63585/Evaluations/Reply/{evaluationId}?employeeId={employee.Id}&departmentManagerId={evaluationAssignedDto.DepartmentManagerId}";
            
             await _emailSender.SendEmailAsync(employee.Email, "Employees Evaluation",
                 $"Hi {employee.Email}, <br /> we would like you to take a time to fill up our evaluation.<br /><br /> <a href='{link}' target='_blank'>Fill Up the Evaluation</a>");
             
+        }
+
+        private async Task SendDepartmentManagerEmail(EvaluationResponseDto evaluationResponseDto)
+        {
+            // get the DM email
+            var departmentManager = _userService.FindBy(u => u.Id == evaluationResponseDto.DepartmentManagerId).FirstOrDefault();
+            var evaluationId = evaluationResponseDto.EvaluationId;
+
+            var link = $"http://localhost:63585/Evaluations/ShowResponse/{evaluationId}?employeeId={departmentManager.Id}";
+
+            await _emailSender.SendEmailAsync(departmentManager.Email, "Employees Evaluation",
+                $"Hi {departmentManager.Email}, <br /> A new evaluation has been answered.<br /><br /> <a href='{link}' target='_blank'>Check it now!</a>");
+
         }
 
 

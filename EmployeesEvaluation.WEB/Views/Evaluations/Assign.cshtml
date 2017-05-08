@@ -27,7 +27,9 @@
                   {
                       read.Action("All", "Evaluations");
                   });
-              }).HtmlAttributes(new { style = "width: 50%" }).Deferred()
+              })
+              .OptionLabel("Select an Evaluation")
+              .HtmlAttributes(new { style = "width: 50%", required = "required" }).Deferred()
             )
         </div>
     </div>
@@ -45,7 +47,9 @@
                   {
                       read.Action("ListDepartmentManagers", "Users");
                   });
-              }).HtmlAttributes(new { style = "width: 50%" }).Deferred()
+              })
+              .OptionLabel("Select a Department Manager")
+              .HtmlAttributes(new { style = "width: 50%" }).Deferred()
             )
         </div>
     </div>
@@ -57,8 +61,10 @@
 
                 .DataTextField("Email")
                 .DataValueField("Id")
-                .AutoBind(false).HtmlAttributes(new { style = "width: 50%" })
-                        .Deferred()
+                .AutoBind(false)
+                .OptionLabel("Select an Employee")
+                .HtmlAttributes(new { style = "width: 50%" })
+                .Deferred()
             )
         </div>
     </div>
@@ -75,9 +81,13 @@
 
 
 @section scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
   @Html.Kendo().DeferredScripts()
     <script>
         $(document).ready(function () {
+
+            $.validator.setDefaults({ ignore: '' });
 
             $("#DepartmentManagerId").change(function () {
 

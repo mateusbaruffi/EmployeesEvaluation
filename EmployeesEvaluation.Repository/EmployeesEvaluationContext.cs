@@ -93,7 +93,7 @@ namespace EmployeesEvaluation.Repository
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<QuestionAnswer>()
-                .HasIndex(qa => qa.QuestionId);
+                .HasOne(qa => qa.Question);
 
             modelBuilder.Entity<QuestionAnswer>()
                 .HasIndex(qa => qa.LikertAnswerId);

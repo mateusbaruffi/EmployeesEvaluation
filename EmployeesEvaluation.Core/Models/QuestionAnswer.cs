@@ -13,6 +13,7 @@ namespace EmployeesEvaluation.Core.Models
         public int LikertAnswerId { get; set; }
         public string OpenEndedAnswer { get; set; }
         public string FileName { get; set; }
+        public Question Question { get; set; }
         public EvaluationResponse EvaluationResponse { get; set; }
     }
 }

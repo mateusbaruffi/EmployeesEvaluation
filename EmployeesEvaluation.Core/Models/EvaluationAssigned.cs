@@ -10,6 +10,8 @@ namespace EmployeesEvaluation.Core.Models
     {
         public int Id { get; set; }
 
+        public string DepartmentManagerId { get; set; }
+
         public Evaluation Evaluation { get; set; }
         public int EvaluationId { get; set; }
 

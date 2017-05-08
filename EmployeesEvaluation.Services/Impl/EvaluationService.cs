@@ -35,7 +35,8 @@ namespace EmployeesEvaluation.Services.Impl
 
         public IEnumerable<EvaluationResponse> GetEvaluationResponses()
         {
-            return _evaluationResponseRepository.AllIncluding(er => er.Employee, e => e.Evaluation);
+            IEnumerable<EvaluationResponse> evaluationResponses = _evaluationResponseRepository.AllIncluding(er => er.Employee, e => e.Evaluation);
+            return evaluationResponses;
         }
 
         public IEnumerable<Evaluation> AllIncluding(params Expression<Func<Evaluation, object>>[] includeProperties)
@@ -50,6 +51,11 @@ namespace EmployeesEvaluation.Services.Impl
         public Evaluation GetSingleIncludingAll(Expression<Func<Evaluation, bool>> predicate)
         {
             return _evaluationRepository.GetSingleIncludingAll(predicate);
+        }
+
+        public EvaluationResponse GetSingleResponseIncludingAll(int id)
+        {
+            return _evaluationResponseRepository.GetSingleIncludingAll(er => er.Id == id);
         }
 
         public IEnumerable<Evaluation> All() 

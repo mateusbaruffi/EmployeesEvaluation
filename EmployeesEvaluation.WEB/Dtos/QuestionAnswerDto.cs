@@ -11,6 +11,8 @@ namespace EmployeesEvaluation.WEB.Dtos
         public int QuestionId { get; set; }
         public int LikertAnswerId { get; set; }
         public string OpenEndedAnswer { get; set; }
+        public string FileName { get; set; }
         public IFormFile File { get; set; }
+        public QuestionDto Question { get; set; }
     }
 }

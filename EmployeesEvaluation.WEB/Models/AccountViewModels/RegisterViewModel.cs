@@ -40,6 +40,7 @@ namespace EmployeesEvaluation.WEB.Models.AccountViewModels
 
         public List<SelectListItem> ApplicationUsers { get; set; }
 
+        [Required]
         public UserType UserType { get; set; }
 
 

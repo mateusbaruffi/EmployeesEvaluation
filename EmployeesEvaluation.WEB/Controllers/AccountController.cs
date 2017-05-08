@@ -206,19 +206,8 @@ namespace EmployeesEvaluation.WEB.Controllers
                         // remove all UserRelation PS: verify if user is employ
                         _userRelationService.DeleteWhere(ur => ur.EmployeeId == user.Id);
 
-                        // create the userRelation again
-                        if ((model.DepartmentManagerIds != null) && (model.DepartmentManagerIds.Count() > 0))
-                        foreach (var dmId in model.DepartmentManagerIds)
-                        {
-                            _logger.LogInformation(">>>>>>>>>>>>>>>>>>>>>> creating new userrelation");
-                            UserRelation ur = new UserRelation()
-                            {
-                                DepartmentManagerId = dmId,
-                                EmployeeId = user.Id
-                            };
-
-                            _userRelationService.Create(ur);
-                        }
+                        // assign department manager to employee
+                        _userRelationService.AssignDepartmentManagerToEmployee(user.Id, model.DepartmentManagerIds);
 
                         if (!currentRoleName.Equals(model.UserType.ToString()))
                         {

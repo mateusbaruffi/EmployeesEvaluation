@@ -24,6 +24,8 @@ namespace EmployeesEvaluation.Services
         Evaluation GetEvaluationAssigned(int evaluationId, string employeeId);
 
         Evaluation GetSingleIncludingAll(Expression<Func<Evaluation, bool>> predicate);
+
+        EvaluationResponse GetSingleResponseIncludingAll(int id);
     }
 
 }

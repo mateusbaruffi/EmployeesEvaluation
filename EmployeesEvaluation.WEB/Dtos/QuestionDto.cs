@@ -11,6 +11,8 @@ namespace EmployeesEvaluation.WEB.Dtos
     public class QuestionDto
     {
         public int Id { get; set; }
+
+        [Required]
         public string Description { get; set; }
         public int Limit { get; set; }
 
@@ -19,6 +21,7 @@ namespace EmployeesEvaluation.WEB.Dtos
         //public ApplicationUser Ownership { get; set; }
 
         [Display(Name = "Ownership")]
+        [Required]
         public string OwnershipId { get; set; }
 
         // public ICollection<EvaluationQuestion> EvaluationQuestions { get; set; }

@@ -59,6 +59,9 @@ namespace EmployeesEvaluation.WEB.Controllers.Api
         [HttpPost("ListResponses")]
         public JsonResult ListResponses([DataSourceRequest]DataSourceRequest request)
         {
+            // emp only see their data 
+            // dm see their data and their emps
+            // hr all
             var result = _evaluationService.GetEvaluationResponses().Select(Mapper.Map<EvaluationResponse, EvaluationResponseDto>);
             var dsResult = result.ToDataSourceResult(request);
             return Json(dsResult);
