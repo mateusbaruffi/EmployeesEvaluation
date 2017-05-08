@@ -41,9 +41,9 @@ namespace EmployeesEvaluation.WEB.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    CreatedAt = table.Column<DateTime>(nullable: false, defaultValue: new DateTime(2017, 5, 7, 10, 29, 52, 162, DateTimeKind.Local)),
+                    CreatedAt = table.Column<DateTime>(nullable: false, defaultValue: new DateTime(2017, 5, 8, 13, 54, 24, 430, DateTimeKind.Local)),
                     Name = table.Column<string>(nullable: true),
-                    UpdatedAt = table.Column<DateTime>(nullable: false, defaultValue: new DateTime(2017, 5, 7, 10, 29, 52, 164, DateTimeKind.Local))
+                    UpdatedAt = table.Column<DateTime>(nullable: false, defaultValue: new DateTime(2017, 5, 8, 13, 54, 24, 432, DateTimeKind.Local))
                 },
                 constraints: table =>
                 {
@@ -97,12 +97,12 @@ namespace EmployeesEvaluation.WEB.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    CreatedAt = table.Column<DateTime>(nullable: false, defaultValue: new DateTime(2017, 5, 7, 10, 29, 52, 170, DateTimeKind.Local)),
+                    CreatedAt = table.Column<DateTime>(nullable: false, defaultValue: new DateTime(2017, 5, 8, 13, 54, 24, 438, DateTimeKind.Local)),
                     Description = table.Column<string>(nullable: true),
                     Limit = table.Column<int>(nullable: false),
                     OwnershipId = table.Column<string>(nullable: true),
                     QuestionType = table.Column<int>(nullable: false),
-                    UpdatedAt = table.Column<DateTime>(nullable: false, defaultValue: new DateTime(2017, 5, 7, 10, 29, 52, 170, DateTimeKind.Local))
+                    UpdatedAt = table.Column<DateTime>(nullable: false, defaultValue: new DateTime(2017, 5, 8, 13, 54, 24, 438, DateTimeKind.Local))
                 },
                 constraints: table =>
                 {
@@ -280,6 +280,7 @@ namespace EmployeesEvaluation.WEB.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    DepartmentManagerId = table.Column<string>(nullable: true),
                     EmployeeId = table.Column<string>(nullable: true),
                     EvaluationId = table.Column<int>(nullable: false)
                 },
@@ -332,6 +333,7 @@ namespace EmployeesEvaluation.WEB.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    DepartmentManagerId = table.Column<string>(nullable: true),
                     EmployeeId = table.Column<string>(nullable: true),
                     EvaluationId = table.Column<int>(nullable: false)
                 },
@@ -373,6 +375,12 @@ namespace EmployeesEvaluation.WEB.Migrations
                         principalTable: "EvaluationResponses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_QuestionAnswer_Questions_QuestionId",
+                        column: x => x.QuestionId,
+                        principalTable: "Questions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -519,10 +527,10 @@ namespace EmployeesEvaluation.WEB.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Questions");
+                name: "EvaluationResponses");
 
             migrationBuilder.DropTable(
-                name: "EvaluationResponses");
+                name: "Questions");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

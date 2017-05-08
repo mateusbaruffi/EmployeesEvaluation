@@ -173,6 +173,9 @@ namespace EmployeesEvaluation.WEB
                     template: "{controller=Account}/{action=Login}/{id?}");
             });
 
+
+            SeedDatabase.Initialize(app.ApplicationServices);
+
             // Configure Kendo UI
             app.UseKendo(env);
         }

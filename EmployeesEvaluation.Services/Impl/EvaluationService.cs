@@ -15,10 +15,11 @@ namespace EmployeesEvaluation.Services.Impl
         private IEvaluationAssignedRepository _evaluationAssignedRepository;
         private IEvaluationQuestionRepository _evaluationQuestionRepository;
         private IEvaluationResponseRepository _evaluationResponseRepository;
+        private IUserRepository _userRepository;
 
         private readonly ILogger _logger;
 
-        public EvaluationService(ILogger<EvaluationService> logger, IEvaluationResponseRepository evaluationResponseRepository, IEvaluationAssignedRepository evaluationAssignedRepository, IEvaluationRepository evaluationRepository, IQuestionRepository questionRepository, IEvaluationQuestionRepository evaluationQuestionRepository) 
+        public EvaluationService(ILogger<EvaluationService> logger, IEvaluationResponseRepository evaluationResponseRepository, IEvaluationAssignedRepository evaluationAssignedRepository, IEvaluationRepository evaluationRepository, IQuestionRepository questionRepository, IEvaluationQuestionRepository evaluationQuestionRepository, IUserRepository userRepository) 
         {
             this._logger = logger;
             this._evaluationRepository = evaluationRepository; 
@@ -26,6 +27,7 @@ namespace EmployeesEvaluation.Services.Impl
             this._evaluationQuestionRepository = evaluationQuestionRepository;
             this._evaluationAssignedRepository = evaluationAssignedRepository;
             this._evaluationResponseRepository = evaluationResponseRepository;
+            this._userRepository = userRepository;
         } 
 
         public IEnumerable<Evaluation> LoadAll()
@@ -33,9 +35,23 @@ namespace EmployeesEvaluation.Services.Impl
             return _evaluationRepository.LoadAll(); 
         }
 
-        public IEnumerable<EvaluationResponse> GetEvaluationResponses()
+        public IEnumerable<EvaluationResponse> GetEvaluationResponses(string id)
         {
-            IEnumerable<EvaluationResponse> evaluationResponses = _evaluationResponseRepository.AllIncluding(er => er.Employee, e => e.Evaluation);
+            IEnumerable<EvaluationResponse> evaluationResponses = null;
+
+            // get the currentUser by Id
+            ApplicationUser user = _userRepository.FindBy(u => u.Id == id).FirstOrDefault();
+
+            // if currentUser is EMP, he/she can only see their data
+            if (user.UserType == UserType.EMP)
+            {
+                evaluationResponses = _evaluationResponseRepository.FindByIncluding(er => er.EmployeeId == user.Id, er => er.Employee, e => e.Evaluation);
+            }
+            else
+            {
+                evaluationResponses = _evaluationResponseRepository.AllIncluding(er => er.Employee, e => e.Evaluation);
+            }
+            
             return evaluationResponses;
         }
 

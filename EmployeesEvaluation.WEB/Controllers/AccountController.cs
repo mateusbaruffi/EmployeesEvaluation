@@ -17,7 +17,7 @@ using EmployeesEvaluation.Services;
 
 namespace EmployeesEvaluation.WEB.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "HRM, DM, EMP")]
     public class AccountController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -52,6 +52,7 @@ namespace EmployeesEvaluation.WEB.Controllers
             _userRelationService = userRelationService;
         }
 
+        [Authorize(Roles = "HRM, DM")]
         public IActionResult Index()
         {
 
@@ -112,7 +113,7 @@ namespace EmployeesEvaluation.WEB.Controllers
         //
         // GET: /Account/Register
         [HttpGet]
-        [AllowAnonymous]
+        [Authorize(Roles = "HRM, DM")]
         public IActionResult Register(string returnUrl = null)
         {
 
@@ -134,7 +135,7 @@ namespace EmployeesEvaluation.WEB.Controllers
             return View(model);
         }
 
-        [AllowAnonymous]
+        [Authorize(Roles = "HRM, DM, EMP")]
         public async Task<IActionResult> Edit(string id)
         {
             RegisterViewModel model = new RegisterViewModel();
@@ -182,7 +183,7 @@ namespace EmployeesEvaluation.WEB.Controllers
         //
         // POST: /Account/Register
         [HttpPost]
-        [AllowAnonymous]
+        [Authorize(Roles = "HRM, DM, EMP")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(RegisterViewModel model, string returnUrl = null)
         {
@@ -236,7 +237,7 @@ namespace EmployeesEvaluation.WEB.Controllers
         //
         // POST: /Account/Register
         [HttpPost]
-        [AllowAnonymous]
+        [Authorize(Roles = "HRM, DM")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
         {
@@ -606,7 +607,7 @@ namespace EmployeesEvaluation.WEB.Controllers
             }
             else
             {
-                return RedirectToAction(nameof(EvaluationsController.Index), "Evaluations");
+                return RedirectToAction(nameof(EvaluationsController.Responses), "Evaluations");
             }
         }
 

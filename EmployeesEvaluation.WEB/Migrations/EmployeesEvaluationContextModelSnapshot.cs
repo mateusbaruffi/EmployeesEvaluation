@@ -78,13 +78,13 @@ namespace EmployeesEvaluation.WEB.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(new DateTime(2017, 5, 7, 10, 29, 52, 162, DateTimeKind.Local));
+                        .HasDefaultValue(new DateTime(2017, 5, 8, 13, 54, 24, 430, DateTimeKind.Local));
 
                     b.Property<string>("Name");
 
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(new DateTime(2017, 5, 7, 10, 29, 52, 164, DateTimeKind.Local));
+                        .HasDefaultValue(new DateTime(2017, 5, 8, 13, 54, 24, 432, DateTimeKind.Local));
 
                     b.HasKey("Id");
 
@@ -119,6 +119,8 @@ namespace EmployeesEvaluation.WEB.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
+
+                    b.Property<string>("DepartmentManagerId");
 
                     b.Property<string>("EmployeeId");
 
@@ -156,6 +158,8 @@ namespace EmployeesEvaluation.WEB.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<string>("DepartmentManagerId");
+
                     b.Property<string>("EmployeeId");
 
                     b.Property<int>("EvaluationId");
@@ -192,7 +196,7 @@ namespace EmployeesEvaluation.WEB.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(new DateTime(2017, 5, 7, 10, 29, 52, 170, DateTimeKind.Local));
+                        .HasDefaultValue(new DateTime(2017, 5, 8, 13, 54, 24, 438, DateTimeKind.Local));
 
                     b.Property<string>("Description");
 
@@ -204,7 +208,7 @@ namespace EmployeesEvaluation.WEB.Migrations
 
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(new DateTime(2017, 5, 7, 10, 29, 52, 170, DateTimeKind.Local));
+                        .HasDefaultValue(new DateTime(2017, 5, 8, 13, 54, 24, 438, DateTimeKind.Local));
 
                     b.HasKey("Id");
 
@@ -438,6 +442,10 @@ namespace EmployeesEvaluation.WEB.Migrations
                         .WithMany("QuestionAnswers")
                         .HasForeignKey("EvaluationResponseId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("EmployeesEvaluation.Core.Models.Question", "Question")
+                        .WithMany()
+                        .HasForeignKey("QuestionId");
                 });
 
             modelBuilder.Entity("EmployeesEvaluation.Core.Models.UserRelation", b =>
