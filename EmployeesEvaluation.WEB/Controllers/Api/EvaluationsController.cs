@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using Kendo.Mvc.UI;
 using Kendo.Mvc.Extensions;
+using Microsoft.AspNetCore.Identity;
 
 namespace EmployeesEvaluation.WEB.Controllers.Api
 {
@@ -20,13 +21,15 @@ namespace EmployeesEvaluation.WEB.Controllers.Api
     public class EvaluationsController : Controller
     {
 
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEvaluationService _evaluationService;
         private readonly ILogger _logger;
 
-        public EvaluationsController(IEvaluationService evaluationService, ILogger<EvaluationsController> logger)
+        public EvaluationsController(IEvaluationService evaluationService, ILogger<EvaluationsController> logger, UserManager<ApplicationUser> userManager)
         {
             this._evaluationService = evaluationService;
             this._logger = logger;
+            this._userManager = userManager;
         }
 
         [HttpPost("List")]
@@ -62,7 +65,12 @@ namespace EmployeesEvaluation.WEB.Controllers.Api
             // emp only see their data 
             // dm see their data and their emps
             // hr all
-            var result = _evaluationService.GetEvaluationResponses().Select(Mapper.Map<EvaluationResponse, EvaluationResponseDto>);
+            //User.
+            var userId = _userManager.GetUserId(HttpContext.User);
+
+            _logger.LogInformation("----------------userId: " + userId);
+
+            var result = _evaluationService.GetEvaluationResponses(userId).Select(Mapper.Map<EvaluationResponse, EvaluationResponseDto>);
             var dsResult = result.ToDataSourceResult(request);
             return Json(dsResult);
         }

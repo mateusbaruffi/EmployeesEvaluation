@@ -12,6 +12,8 @@ namespace EmployeesEvaluation.Repository.Repositories
 
         EvaluationResponse GetSingleIncludingAll(Expression<Func<EvaluationResponse,bool>> predicate);
 
+        IEnumerable<EvaluationResponse> FindByIncluding(Expression<Func<EvaluationResponse, bool>> predicate, params Expression<Func<EvaluationResponse, object>>[] includeProperties);
+
     }
 
 }

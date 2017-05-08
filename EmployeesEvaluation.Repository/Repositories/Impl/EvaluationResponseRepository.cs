@@ -23,5 +23,18 @@ namespace EmployeesEvaluation.Repository.Repositories.Impl
             query = query.Include(er => er.Employee).Include(er => er.Evaluation).Include(er => er.QuestionAnswers).ThenInclude(qa => qa.Question).ThenInclude(q => q.LikertAnswers);
             return query.Where(predicate).FirstOrDefault();
         }
+
+        public virtual IEnumerable<EvaluationResponse> FindByIncluding(Expression<Func<EvaluationResponse, bool>> predicate, params Expression<Func<EvaluationResponse, object>>[] includeProperties)
+        {
+            IQueryable<EvaluationResponse> query = _context.Set<EvaluationResponse>();
+            foreach (var includeProperty in includeProperties)
+            {
+                query = query.Include(includeProperty);
+            }
+
+            query.Where(predicate);
+
+            return query.Where(predicate);
+        }
     }
 }
