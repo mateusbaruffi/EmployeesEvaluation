@@ -85,6 +85,12 @@
                             <a asp-area="" asp-controller="Evaluations" asp-action="Assign">Assign Evaluation</a>
                         </li>
                         }
+                        @if (User.IsInRole("HRM"))
+                        {
+                        <li>
+                            <a asp-area="" asp-controller="Evaluations" asp-action="Report">Evaluation Reports</a>
+                        </li>
+                        }
                         <li>
                             <a asp-area="" asp-controller="Evaluations" asp-action="Responses">Responses</a>
                         </li>                        
@@ -94,11 +100,31 @@
                 @if (User.IsInRole("HRM") || User.IsInRole("DM"))
                 {
                 <li>
-                    <a asp-area="" asp-controller="Questions" asp-action="Index"><i class="fa fa-edit fa-fw"></i> Questions</a>
+                    <a asp-area="" asp-controller="Questions" asp-action="Index"><i class="fa fa-edit fa-fw"></i> Questions<span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+
+                            <li>
+                                <a asp-area="" asp-controller="Questions" asp-action="Index">List Questions</a>
+                            </li>
+                            <li>
+                                <a asp-area="" asp-controller="Questions" asp-action="New">New Question</a>
+                            </li>
+
+                    </ul>
                 </li>
 
                 <li>
-                    <a asp-area="" asp-controller="Account" asp-action="Index"><i class="fa fa-edit fa-fw"></i> Users</a>
+                    <a asp-area="" asp-controller="Account" asp-action="Index"><i class="fa fa-edit fa-fw"></i> Users<span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+
+                        <li>
+                            <a asp-area="" asp-controller="Account" asp-action="Index">List Users</a>
+                        </li>
+                        <li>
+                            <a asp-area="" asp-controller="Account" asp-action="Register">New User</a>
+                        </li>
+
+                    </ul>
                 </li>
                 }
             </ul>

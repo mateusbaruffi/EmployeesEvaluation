@@ -110,6 +110,13 @@ namespace EmployeesEvaluation.WEB.Controllers
         }
 
         [Authorize(Roles = "HRM, DM")]
+        public IActionResult Report()
+        {
+            return View();
+        }
+
+
+        [Authorize(Roles = "HRM, DM")]
         public IActionResult Assign()
         {
             return View();
